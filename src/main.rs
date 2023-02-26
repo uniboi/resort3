@@ -9,7 +9,7 @@ mod var_rep;
 mod yields_rep;
 
 use binary_rep::get_binary_rep;
-use function_rep::{get_function_definition_rep, get_function_rep};
+use function_rep::{get_function_definition_rep, get_function_rep, get_call_rep};
 use global_rep::get_global_rep;
 use literal_rep::{get_literal_rep, get_vector_rep};
 use property_rep::get_property_rep;
@@ -107,7 +107,7 @@ fn get_expression_rep(expression: &Expression) -> String {
         Expression::Class(_) => todo!(),
         Expression::Array(_) => todo!(),
         Expression::Function(p) => get_function_rep(p),
-        Expression::Call(_) => todo!(),
+        Expression::Call(p) => get_call_rep(p),
         Expression::Delegate(p) => format!(
             "delegate {} : {}",
             get_expression_rep(&*p.parent),

@@ -1,5 +1,6 @@
 use sqparse::ast::{
-    FunctionDefinitionStatement, FunctionExpression, FunctionParam, FunctionParams,
+    CallExpression, Expression, FunctionDefinitionStatement, FunctionExpression, FunctionParam,
+    FunctionParams, SeparatedListTrailing1,
 };
 
 use crate::{
@@ -100,4 +101,24 @@ pub fn get_function_definition_rep(f: &FunctionDefinitionStatement) -> String {
         },
         get_statement_rep(&f.definition.body)
     )
+}
+
+pub fn get_call_rep(p: &CallExpression) -> String {
+    format!("{}({})", get_expression_rep(&*p.function), get_call_params_rep(&p.arguments))
+}
+
+fn get_call_params_rep(args: &Option<SeparatedListTrailing1<Expression>>) -> String {
+    match args {
+        Some(list) => format!(
+            " {}{}{} ",
+            list.items
+                .iter()
+                .map(|(expression, _)| get_expression_rep(expression))
+                .collect::<Vec<_>>()
+                .join(", "),
+            if list.items.len() > 0 { ", " } else { "" },
+            get_expression_rep(&list.last_item)
+        ),
+        None => String::from(""),
+    }
 }
