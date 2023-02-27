@@ -17,12 +17,14 @@ mod fix_rep;
 mod array_rep;
 mod table_rep;
 mod switch_rep;
+mod foreach_rep;
 
 use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
 use block_rep::get_block_rep;
 use fix_rep::{get_prefixed_expression_rep, get_postfixed_expression_rep};
 use for_rep::get_for_rep;
+use foreach_rep::get_foreach_rep;
 use function_rep::{get_function_definition_rep, get_function_rep, get_call_rep};
 use global_rep::get_global_rep;
 use if_rep::get_if_rep;
@@ -70,7 +72,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::DoWhile(p) => get_do_while_rep(p, depth),
         StatementType::Switch(p) => get_switch_rep(p, depth),
         StatementType::For(p) => get_for_rep(p, depth),
-        StatementType::Foreach(_) => todo!(),
+        StatementType::Foreach(p) => get_foreach_rep(p, depth),
         StatementType::Break(_) => String::from("break"),
         StatementType::Continue(_) => String::from("continue"),
         StatementType::Return(p) => get_return_rep(p, depth),

@@ -1,4 +1,4 @@
-use sqparse::ast::BlockStatement;
+use sqparse::ast::{BlockStatement, StatementType};
 
 use crate::{get_statement_rep, utils::get_lead};
 
@@ -16,4 +16,11 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
             .collect::<Vec<_>>()
             .join(&format!("\n{statements_pre}"))
     )
+}
+
+pub fn inset_statement_rep(stm: &StatementType, depth: usize) -> String {
+    match &stm {
+        StatementType::Block(_) => get_statement_rep(stm, depth),
+        _ => format!("\n{}{}", get_lead(depth + 1), get_statement_rep(stm, depth + 1)),
+    }
 }
