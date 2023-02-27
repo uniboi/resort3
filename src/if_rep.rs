@@ -1,4 +1,4 @@
-use sqparse::ast::{BlockStatement, IfStatement, Statement, StatementType};
+use sqparse::ast::{IfStatement, StatementType};
 
 use crate::{
     block_rep::get_block_rep, get_statement_rep, parens_rep::get_parens_rep, utils::get_lead,

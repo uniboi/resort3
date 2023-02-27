@@ -21,10 +21,12 @@ mod while_rep;
 mod yields_rep;
 mod struct_rep;
 mod constructor_res;
+mod class_rep;
 
 use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
 use block_rep::get_block_rep;
+use class_rep::{get_class_expression_rep};
 use constructor_res::get_constructor_def_rep;
 use enum_rep::get_enum_rep;
 use fix_rep::{get_postfixed_expression_rep, get_prefixed_expression_rep};
@@ -131,7 +133,7 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
         Expression::Postfix(p) => get_postfixed_expression_rep(p, depth),
         Expression::Comma(_) => todo!(),
         Expression::Table(p) => get_table_rep(p, depth),
-        Expression::Class(_) => todo!(),
+        Expression::Class(p) => get_class_expression_rep(p, depth),
         Expression::Array(p) => get_array_rep(p, depth),
         Expression::Function(p) => get_function_rep(p, depth),
         Expression::Call(p) => get_call_rep(p, depth),

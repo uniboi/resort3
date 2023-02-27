@@ -44,9 +44,9 @@ fn get_table_pair_rep(s: &TableSlot, depth: usize) -> String {
             sqparse::ast::TableSlotType::Slot(slot) => match slot {
                 sqparse::ast::Slot::Property { name, initializer } => format!("{}{}", name.value, get_var_initializer_rep(initializer, depth)),
                 sqparse::ast::Slot::ComputedProperty {
-                    open,
+                    open: _,
                     name,
-                    close,
+                    close: _,
                     initializer,
                 } => format!("[{}]{}", get_expression_rep(&*name, depth), get_var_initializer_rep(initializer, depth)),
                 sqparse::ast::Slot::Constructor {
