@@ -14,7 +14,9 @@ mod parens_rep;
 mod while_rep;
 mod for_rep;
 mod fix_rep;
+mod array_rep;
 
+use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
 use block_rep::get_block_rep;
 use fix_rep::{get_prefixed_expression_rep, get_postfixed_expression_rep};
@@ -118,7 +120,7 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
         Expression::Comma(_) => todo!(),
         Expression::Table(_) => todo!(),
         Expression::Class(_) => todo!(),
-        Expression::Array(_) => todo!(),
+        Expression::Array(p) => get_array_rep(p, depth),
         Expression::Function(p) => get_function_rep(p, depth),
         Expression::Call(p) => get_call_rep(p, depth),
         Expression::Delegate(p) => format!(
