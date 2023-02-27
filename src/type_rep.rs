@@ -18,7 +18,7 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
             get_typed_type_rep(&*t.base, depth),
             get_expression_rep(&t.len, depth)
         ),
-        Type::Generic(_) => todo!(),
+        Type::Generic(p) => get_generic_type_rep(p, depth),
         Type::FunctionRef(p) => get_functionref_type_rep(p, depth),
         Type::Struct(_) => todo!(),
         Type::Reference(t) => format!("{}&", get_typed_type_rep(&*t.base, depth)),
@@ -80,4 +80,36 @@ pub fn get_typedef_rep(def: &TypeDefinitionStatement, depth: usize) -> String {
         def.name.value,
         get_typed_type_rep(&def.type_, depth)
     )
+}
+
+fn get_generic_type_rep(ty: &sqparse::ast::GenericType, depth: usize) -> String {
+    format!(
+        "{}<{}>",
+        get_typed_type_rep(&*ty.base, depth),
+        get_generic_type_content_rep(&ty.params, depth)
+    )
+}
+
+fn get_generic_type_content_rep(
+    types: &sqparse::ast::SeparatedListTrailing1<Type>,
+    depth: usize,
+) -> String {
+    let mut padding = ""; // TODO: Read from config
+    let rep = format!(
+        "{}{}{}",
+        types
+            .items
+            .iter()
+            .map(|(t, _)| get_typed_type_rep(t, depth))
+            .collect::<Vec<_>>()
+            .join(", "),
+        if types.items.len() > 0 { ", " } else { "" },
+        get_typed_type_rep(&*types.last_item, depth)
+    );
+
+    if matches!(&*types.last_item, Type::Generic(_)) {
+        padding = " "; // This is required to compile since right bit shift (>>) will be lexed before any types
+    }
+
+    format!("{padding}{}{padding}", rep)
 }
