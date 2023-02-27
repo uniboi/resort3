@@ -1,6 +1,6 @@
 use sqparse::ast::{Type, TypeDefinitionStatement};
 
-use crate::get_expression_rep;
+use crate::{get_expression_rep, struct_rep::get_anon_struct_definition_rep};
 
 pub fn get_type_rep(ty: &Option<Type>, depth: usize) -> String {
     match ty {
@@ -20,7 +20,7 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
         ),
         Type::Generic(p) => get_generic_type_rep(p, depth),
         Type::FunctionRef(p) => get_functionref_type_rep(p, depth),
-        Type::Struct(_) => todo!(),
+        Type::Struct(t) => get_anon_struct_definition_rep(&t.definition, depth),
         Type::Reference(t) => format!("{}&", get_typed_type_rep(&*t.base, depth)),
         Type::Nullable(t) => format!("{} ornull", get_typed_type_rep(&*t.base, depth)),
     }

@@ -19,6 +19,7 @@ mod utils;
 mod var_rep;
 mod while_rep;
 mod yields_rep;
+mod struct_rep;
 
 use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
@@ -37,6 +38,7 @@ use sqparse::{
     ast::{Expression, StatementType},
     parse, tokenize, Flavor,
 };
+use struct_rep::get_struct_definition_rep;
 use switch_rep::get_switch_rep;
 use table_rep::get_table_rep;
 use try_rep::{get_try_rep, throw_rep};
@@ -93,7 +95,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::WaitThread(_) => String::from("waitthread"),
         StatementType::WaitThreadSolo(_) => String::from("waitthreadsolo"),
         StatementType::Wait(p) => format!("wait {}", get_expression_rep(&*p.value, depth)),
-        StatementType::StructDefinition(_) => todo!(),
+        StatementType::StructDefinition(p) => get_struct_definition_rep(p, depth),
         StatementType::TypeDefinition(p) => get_typedef_rep(p, depth),
         StatementType::Global(p) => get_global_rep(p, depth),
         StatementType::GlobalizeAllFunctions(_) => String::from("globalize_all_functions"),
