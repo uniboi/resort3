@@ -9,12 +9,16 @@ mod var_rep;
 mod yields_rep;
 mod block_rep;
 mod utils;
+mod if_rep;
+mod parens_rep;
 
 use binary_rep::get_binary_rep;
 use block_rep::get_block_rep;
 use function_rep::{get_function_definition_rep, get_function_rep, get_call_rep};
 use global_rep::get_global_rep;
+use if_rep::get_if_rep;
 use literal_rep::{get_literal_rep, get_vector_rep};
+use parens_rep::get_parens_rep;
 use property_rep::get_property_rep;
 use sqparse::{
     ast::{Expression, StatementType},
@@ -49,7 +53,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
     let rep: String = match &statement {
         StatementType::Empty(_) => todo!(),
         StatementType::Block(p) => get_block_rep(p, depth),
-        StatementType::If(_) => todo!(),
+        StatementType::If(p) => get_if_rep(p, depth),
         StatementType::While(_) => todo!(),
         StatementType::DoWhile(_) => todo!(),
         StatementType::Switch(_) => todo!(),
@@ -86,7 +90,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
 
 fn get_expression_rep(expression: &Expression, depth: usize) -> String {
     match expression {
-        Expression::Parens(p) => format!("( {} )", get_expression_rep(&*p.value, depth)),
+        Expression::Parens(p) => get_parens_rep(&*p.value, depth),
         Expression::Literal(p) => get_literal_rep(p),
         Expression::Var(p) => String::from(p.name.value),
         Expression::RootVar(p) => format!("::{}", p.name.value),
