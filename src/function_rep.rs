@@ -1,6 +1,6 @@
 use sqparse::ast::{
-    CallExpression, Expression, FunctionDefinitionStatement, FunctionEnvironment,
-    FunctionExpression, FunctionParam, FunctionParams, SeparatedListTrailing1,
+    CallExpression, Expression, FunctionDefinition, FunctionDefinitionStatement,
+    FunctionEnvironment, FunctionExpression, FunctionParam, FunctionParams, SeparatedListTrailing1,
 };
 
 use crate::{
@@ -92,19 +92,29 @@ fn get_all_typed_args_rep(
 }
 
 pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize) -> String {
-    // println!("{f:#?}");
     format!(
-        "{} function {}{}{}({}){}{}",
+        "{} function {}{}{}",
         get_type_rep(&f.return_type, depth),
-        f.name.items.iter().map(|(name, _)| format!("{}::", name.value)).collect::<String>(),
+        f.name
+            .items
+            .iter()
+            .map(|(name, _)| format!("{}::", name.value))
+            .collect::<String>(),
         f.name.last_item.value,
-        get_environment_rep(&f.definition.environment, depth),
-        get_function_param_rep(&f.definition.params, depth),
-        match &f.definition.captures {
+        get_function_def_rep(&f.definition, depth)
+    )
+}
+
+pub fn get_function_def_rep(def: &FunctionDefinition, depth: usize) -> String {
+    format!(
+        "{}({}){}{}",
+        get_environment_rep(&def.environment, depth),
+        get_function_param_rep(&def.params, depth),
+        match &def.captures {
             Some(capture) => get_capture_rep(capture),
             None => "".to_owned(),
         },
-        get_statement_rep(&f.definition.body, depth)
+        get_statement_rep(&def.body, depth)
     )
 }
 
