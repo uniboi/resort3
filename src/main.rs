@@ -1,31 +1,33 @@
+mod array_rep;
 mod binary_rep;
+mod block_rep;
+mod enum_rep;
+mod fix_rep;
+mod for_rep;
+mod foreach_rep;
 mod function_rep;
 mod global_rep;
+mod if_rep;
 mod literal_rep;
+mod parens_rep;
 mod property_rep;
+mod switch_rep;
+mod table_rep;
 mod try_rep;
 mod type_rep;
-mod var_rep;
-mod yields_rep;
-mod block_rep;
 mod utils;
-mod if_rep;
-mod parens_rep;
+mod var_rep;
 mod while_rep;
-mod for_rep;
-mod fix_rep;
-mod array_rep;
-mod table_rep;
-mod switch_rep;
-mod foreach_rep;
+mod yields_rep;
 
 use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
 use block_rep::get_block_rep;
-use fix_rep::{get_prefixed_expression_rep, get_postfixed_expression_rep};
+use enum_rep::get_enum_rep;
+use fix_rep::{get_postfixed_expression_rep, get_prefixed_expression_rep};
 use for_rep::get_for_rep;
 use foreach_rep::get_foreach_rep;
-use function_rep::{get_function_definition_rep, get_function_rep, get_call_rep};
+use function_rep::{get_call_rep, get_function_definition_rep, get_function_rep};
 use global_rep::get_global_rep;
 use if_rep::get_if_rep;
 use literal_rep::{get_literal_rep, get_vector_rep};
@@ -37,10 +39,10 @@ use sqparse::{
 };
 use switch_rep::get_switch_rep;
 use table_rep::get_table_rep;
-use try_rep::{throw_rep, get_try_rep};
+use try_rep::{get_try_rep, throw_rep};
 use type_rep::{get_typed_type_rep, get_typedef_rep};
 use var_rep::{get_const_rep, get_var_definition_list_rep};
-use while_rep::{get_while_rep, get_do_while_rep};
+use while_rep::{get_do_while_rep, get_while_rep};
 use yields_rep::{get_delaythread_rep, get_return_rep, get_yield_rep};
 
 use std::{env, fs};
@@ -84,7 +86,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::TryCatch(p) => get_try_rep(p, depth),
         StatementType::Throw(p) => throw_rep(p, depth),
         StatementType::Const(p) => get_const_rep(p, depth),
-        StatementType::EnumDefinition(_) => todo!(),
+        StatementType::EnumDefinition(p) => get_enum_rep(p, depth),
         StatementType::Expression(p) => get_expression_rep(&*p.value, depth),
         StatementType::Thread(p) => format!("thread {}", get_expression_rep(&*p.value, depth)),
         StatementType::DelayThread(p) => get_delaythread_rep(p, depth),
