@@ -76,7 +76,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::Const(p) => get_const_rep(p, depth),
         StatementType::EnumDefinition(_) => todo!(),
         StatementType::Expression(p) => get_expression_rep(&*p.value, depth),
-        StatementType::Thread(_) => todo!(),
+        StatementType::Thread(p) => format!("thread {}", get_expression_rep(&*p.value, depth)),
         StatementType::DelayThread(p) => get_delaythread_rep(p, depth),
         StatementType::WaitThread(_) => String::from("waitthread"),
         StatementType::WaitThreadSolo(_) => String::from("waitthreadsolo"),
