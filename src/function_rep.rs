@@ -1,6 +1,6 @@
 use sqparse::ast::{
-    CallExpression, Expression, FunctionDefinitionStatement, FunctionExpression, FunctionParam,
-    FunctionParams, SeparatedListTrailing1,
+    CallExpression, Expression, FunctionDefinitionStatement, FunctionEnvironment,
+    FunctionExpression, FunctionParam, FunctionParams, SeparatedListTrailing1,
 };
 
 use crate::{
@@ -14,7 +14,8 @@ pub fn get_function_rep(f: &FunctionExpression, depth: usize) -> String {
         None => String::new(),
     };
     format!(
-        "{return_type}function({}){}{}",
+        "{return_type}function{}({}){}{}",
+        get_environment_rep(&f.definition.environment, depth),
         get_function_param_rep(&f.definition.params, depth),
         match &f.definition.captures {
             Some(p) => get_capture_rep(p),
@@ -92,9 +93,10 @@ fn get_all_typed_args_rep(
 
 pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize) -> String {
     format!(
-        "{} function {}({}){}{}",
+        "{} function {}{}({}){}{}",
         get_type_rep(&f.return_type, depth),
         f.name.last_item.value,
+        get_environment_rep(&f.definition.environment, depth),
         get_function_param_rep(&f.definition.params, depth),
         match &f.definition.captures {
             Some(capture) => get_capture_rep(capture),
@@ -102,6 +104,13 @@ pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize
         },
         get_statement_rep(&f.definition.body, depth)
     )
+}
+
+fn get_environment_rep(env: &Option<FunctionEnvironment>, depth: usize) -> String {
+    match &env {
+        Some(env) => format!("[ {} ]", get_expression_rep(&*env.value, depth)),
+        None => String::new(),
+    }
 }
 
 pub fn get_call_rep(p: &CallExpression, depth: usize) -> String {
