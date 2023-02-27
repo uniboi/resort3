@@ -15,6 +15,7 @@ mod while_rep;
 mod for_rep;
 mod fix_rep;
 mod array_rep;
+mod table_rep;
 
 use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
@@ -31,6 +32,7 @@ use sqparse::{
     ast::{Expression, StatementType},
     parse, tokenize, Flavor,
 };
+use table_rep::get_table_rep;
 use try_rep::throw_rep;
 use type_rep::{get_typed_type_rep, get_typedef_rep};
 use var_rep::{get_const_rep, get_var_definition_list_rep};
@@ -118,7 +120,7 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
         Expression::Prefix(p) => get_prefixed_expression_rep(p, depth),
         Expression::Postfix(p) => get_postfixed_expression_rep(p, depth),
         Expression::Comma(_) => todo!(),
-        Expression::Table(_) => todo!(),
+        Expression::Table(p) => get_table_rep(p, depth),
         Expression::Class(_) => todo!(),
         Expression::Array(p) => get_array_rep(p, depth),
         Expression::Function(p) => get_function_rep(p, depth),
