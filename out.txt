@@ -9,10 +9,10 @@ void function abc()
 	printt( 2 )
 	printt( void function()
 	{
-		
+		return "bruh"
 	} )
 }
 void function abc2()
 {
-	
+	throw "sex"
 }
