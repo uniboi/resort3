@@ -3,7 +3,7 @@ use sqparse::ast::GlobalStatement;
 use crate::{
     enum_rep::get_enum_rep,
     type_rep::get_typedef_rep,
-    var_rep::{get_const_rep, get_var_definition_list_rep, get_var_initializer_rep},
+    var_rep::{get_const_rep, get_var_definition_list_rep, get_var_initializer_rep}, struct_rep::get_struct_definition_rep,
 };
 
 pub fn get_global_rep(statement: &GlobalStatement, depth: usize) -> String {
@@ -28,7 +28,7 @@ pub fn get_global_rep(statement: &GlobalStatement, depth: usize) -> String {
         sqparse::ast::GlobalDefinition::Const(p) => get_const_rep(p, depth),
         sqparse::ast::GlobalDefinition::Enum(p) => get_enum_rep(p, depth),
         sqparse::ast::GlobalDefinition::Class(_) => todo!(),
-        sqparse::ast::GlobalDefinition::Struct(_) => todo!(),
+        sqparse::ast::GlobalDefinition::Struct(p) => get_struct_definition_rep(p, depth),
         sqparse::ast::GlobalDefinition::Type(p) => get_typedef_rep(p, depth),
     };
     format!("global {global_rep}")
