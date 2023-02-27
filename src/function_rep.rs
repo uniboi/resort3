@@ -92,9 +92,11 @@ fn get_all_typed_args_rep(
 }
 
 pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize) -> String {
+    // println!("{f:#?}");
     format!(
-        "{} function {}{}({}){}{}",
+        "{} function {}{}{}({}){}{}",
         get_type_rep(&f.return_type, depth),
+        f.name.items.iter().map(|(name, _)| format!("{}::", name.value)).collect::<String>(),
         f.name.last_item.value,
         get_environment_rep(&f.definition.environment, depth),
         get_function_param_rep(&f.definition.params, depth),
