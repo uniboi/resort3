@@ -16,6 +16,7 @@ mod for_rep;
 mod fix_rep;
 mod array_rep;
 mod table_rep;
+mod switch_rep;
 
 use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
@@ -32,6 +33,7 @@ use sqparse::{
     ast::{Expression, StatementType},
     parse, tokenize, Flavor,
 };
+use switch_rep::get_switch_rep;
 use table_rep::get_table_rep;
 use try_rep::throw_rep;
 use type_rep::{get_typed_type_rep, get_typedef_rep};
@@ -66,7 +68,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::If(p) => get_if_rep(p, depth),
         StatementType::While(p) => get_while_rep(p, depth),
         StatementType::DoWhile(p) => get_do_while_rep(p, depth),
-        StatementType::Switch(_) => todo!(),
+        StatementType::Switch(p) => get_switch_rep(p, depth),
         StatementType::For(p) => get_for_rep(p, depth),
         StatementType::Foreach(_) => todo!(),
         StatementType::Break(_) => String::from("break"),
