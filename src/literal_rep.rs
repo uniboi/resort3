@@ -53,12 +53,12 @@ fn get_string_rep(exp: &sqparse::token::StringToken) -> String {
     }
 }
 
-pub fn get_vector_rep(exp: &sqparse::ast::VectorExpression) -> String {
+pub fn get_vector_rep(exp: &sqparse::ast::VectorExpression, depth: usize) -> String {
     let padding = " "; // TODO: read from config
     format!(
         "<{padding}{}, {}, {}{padding}>",
-        get_expression_rep(&exp.x),
-        get_expression_rep(&exp.y),
-        get_expression_rep(&exp.z)
+        get_expression_rep(&exp.x, depth),
+        get_expression_rep(&exp.y, depth),
+        get_expression_rep(&exp.z, depth)
     )
 }

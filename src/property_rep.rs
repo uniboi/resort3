@@ -1,9 +1,9 @@
 use crate::get_expression_rep;
 
-pub fn get_property_rep(exp: &sqparse::ast::PropertyExpression) -> String {
+pub fn get_property_rep(exp: &sqparse::ast::PropertyExpression, depth: usize) -> String {
     format!(
         "{}.{}",
-        get_expression_rep(&*exp.base),
+        get_expression_rep(&*exp.base, depth),
         get_method_identifier_rep(&exp.property)
     )
 }

@@ -2,12 +2,12 @@ use sqparse::ast::{BinaryExpression, BinaryOperator};
 
 use crate::get_expression_rep;
 
-pub fn get_binary_rep(p: &BinaryExpression) -> String {
+pub fn get_binary_rep(p: &BinaryExpression, depth: usize) -> String {
     format!(
         "{} {} {}",
-        get_expression_rep(&*p.left),
+        get_expression_rep(&*p.left, depth),
         get_binary_operator_rep(&p.operator),
-        get_expression_rep(&*p.right)
+        get_expression_rep(&*p.right, depth)
     )
 }
 
