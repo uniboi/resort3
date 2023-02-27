@@ -12,9 +12,11 @@ mod utils;
 mod if_rep;
 mod parens_rep;
 mod while_rep;
+mod for_rep;
 
 use binary_rep::get_binary_rep;
 use block_rep::get_block_rep;
+use for_rep::get_for_rep;
 use function_rep::{get_function_definition_rep, get_function_rep, get_call_rep};
 use global_rep::get_global_rep;
 use if_rep::get_if_rep;
@@ -28,7 +30,7 @@ use sqparse::{
 use try_rep::throw_rep;
 use type_rep::{get_typed_type_rep, get_typedef_rep};
 use var_rep::{get_const_rep, get_var_definition_list_rep};
-use while_rep::get_while_rep;
+use while_rep::{get_while_rep, get_do_while_rep};
 use yields_rep::{get_delaythread_rep, get_return_rep, get_yield_rep};
 
 use std::{env, fs};
@@ -57,9 +59,9 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::Block(p) => get_block_rep(p, depth),
         StatementType::If(p) => get_if_rep(p, depth),
         StatementType::While(p) => get_while_rep(p, depth),
-        StatementType::DoWhile(_) => todo!(),
+        StatementType::DoWhile(p) => get_do_while_rep(p, depth),
         StatementType::Switch(_) => todo!(),
-        StatementType::For(_) => todo!(),
+        StatementType::For(p) => get_for_rep(p, depth),
         StatementType::Foreach(_) => todo!(),
         StatementType::Break(_) => String::from("break"),
         StatementType::Continue(_) => String::from("continue"),
