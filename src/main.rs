@@ -11,6 +11,7 @@ mod block_rep;
 mod utils;
 mod if_rep;
 mod parens_rep;
+mod while_rep;
 
 use binary_rep::get_binary_rep;
 use block_rep::get_block_rep;
@@ -27,6 +28,7 @@ use sqparse::{
 use try_rep::throw_rep;
 use type_rep::{get_typed_type_rep, get_typedef_rep};
 use var_rep::{get_const_rep, get_var_definition_list_rep};
+use while_rep::get_while_rep;
 use yields_rep::{get_delaythread_rep, get_return_rep, get_yield_rep};
 
 use std::{env, fs};
@@ -54,7 +56,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::Empty(_) => todo!(),
         StatementType::Block(p) => get_block_rep(p, depth),
         StatementType::If(p) => get_if_rep(p, depth),
-        StatementType::While(_) => todo!(),
+        StatementType::While(p) => get_while_rep(p, depth),
         StatementType::DoWhile(_) => todo!(),
         StatementType::Switch(_) => todo!(),
         StatementType::For(_) => todo!(),
