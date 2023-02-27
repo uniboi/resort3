@@ -37,7 +37,7 @@ use sqparse::{
 };
 use switch_rep::get_switch_rep;
 use table_rep::get_table_rep;
-use try_rep::throw_rep;
+use try_rep::{throw_rep, get_try_rep};
 use type_rep::{get_typed_type_rep, get_typedef_rep};
 use var_rep::{get_const_rep, get_var_definition_list_rep};
 use while_rep::{get_while_rep, get_do_while_rep};
@@ -81,7 +81,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::ConstructorDefinition(_) => todo!(),
         StatementType::FunctionDefinition(p) => get_function_definition_rep(p, depth),
         StatementType::ClassDefinition(_) => todo!(),
-        StatementType::TryCatch(_) => todo!(),
+        StatementType::TryCatch(p) => get_try_rep(p, depth),
         StatementType::Throw(p) => throw_rep(p, depth),
         StatementType::Const(p) => get_const_rep(p, depth),
         StatementType::EnumDefinition(_) => todo!(),
