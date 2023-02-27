@@ -19,9 +19,13 @@ pub fn get_const_rep(statement: &ConstDefinitionStatement, depth: usize) -> Stri
 
 pub fn get_var_definition_list_rep(statement: &VarDefinitionStatement, depth: usize) -> String {
     format!(
-        "{} {}",
+        "{} {}{}",
         get_typed_type_rep(&statement.type_, depth),
-        get_definition_list_rep(&statement.definitions)
+        get_definition_list_rep(&statement.definitions),
+		match &statement.definitions.last_item.initializer {
+			Some(initializer) => get_var_initializer_rep(initializer, depth),
+			None => String::new(),
+		}
     )
 }
 
