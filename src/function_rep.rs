@@ -1,6 +1,10 @@
-use sqparse::ast::{
-    CallExpression, Expression, FunctionDefinition, FunctionDefinitionStatement,
-    FunctionEnvironment, FunctionExpression, FunctionParam, FunctionParams, SeparatedListTrailing1,
+use sqparse::{
+    ast::{
+        CallExpression, Expression, FunctionDefinition, FunctionDefinitionStatement,
+        FunctionEnvironment, FunctionExpression, FunctionParam, FunctionParams, Identifier,
+        SeparatedListTrailing1, Type,
+    },
+    token::Token,
 };
 
 use crate::{
@@ -100,7 +104,7 @@ pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize
             .iter()
             .map(|(name, _)| format!("{}::", name.value))
             .collect::<String>(),
-        f.name.last_item.value,
+        f.name.last_item.value, // TODO: multiple namespaces
         get_function_def_rep(&f.definition, depth)
     )
 }
@@ -147,4 +151,22 @@ fn get_call_params_rep(args: &Option<SeparatedListTrailing1<Expression>>, depth:
         ),
         None => String::from(""),
     }
+}
+
+pub fn get_fragmented_named_function_rep(
+    return_type: &Option<Type>,
+    _function: &Token,
+    name: &Identifier,
+    definition: &Box<FunctionDefinition>,
+    depth: usize,
+) -> String {
+    format!(
+        "{}function {}{}",
+        match &return_type {
+            Some(ty) => get_typed_type_rep(ty, depth),
+            None => String::new(),
+        },
+        name.value,
+        get_function_def_rep(definition, depth)
+    )
 }

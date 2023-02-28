@@ -1,6 +1,9 @@
-use sqparse::ast::TableSlot;
+use sqparse::ast::{Slot, TableSlot};
 
-use crate::{get_expression_rep, utils::get_lead, var_rep::get_var_initializer_rep};
+use crate::{
+    function_rep::{get_function_def_rep, get_fragmented_named_function_rep}, get_expression_rep, utils::get_lead,
+    var_rep::get_var_initializer_rep,
+};
 
 pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> String {
     let prop_inset = get_lead(depth + 1);
@@ -37,30 +40,11 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
     }
 }
 
-fn get_table_pair_rep(s: &TableSlot, depth: usize) -> String {
+pub fn get_table_pair_rep(s: &TableSlot, depth: usize) -> String {
     format!(
         "{}",
         match &s.ty {
-            sqparse::ast::TableSlotType::Slot(slot) => match slot {
-                sqparse::ast::Slot::Property { name, initializer } => format!("{}{}", name.value, get_var_initializer_rep(initializer, depth)),
-                sqparse::ast::Slot::ComputedProperty {
-                    open: _,
-                    name,
-                    close: _,
-                    initializer,
-                } => format!("[{}]{}", get_expression_rep(&*name, depth), get_var_initializer_rep(initializer, depth)),
-                sqparse::ast::Slot::Constructor {
-                    function,
-                    constructor,
-                    definition,
-                } => todo!(),
-                sqparse::ast::Slot::Function {
-                    return_type,
-                    function,
-                    name,
-                    definition,
-                } => todo!(),
-            },
+            sqparse::ast::TableSlotType::Slot(slot) => get_slot_rep(slot, depth),
             sqparse::ast::TableSlotType::JsonProperty {
                 name,
                 name_token: _,
@@ -69,4 +53,42 @@ fn get_table_pair_rep(s: &TableSlot, depth: usize) -> String {
             } => format!("\"{name}\" = {}", get_expression_rep(&*value, depth)),
         }
     )
+}
+
+pub fn get_slot_rep(s: &Slot, depth: usize) -> String {
+    match &s {
+        sqparse::ast::Slot::Property { name, initializer } => format!(
+            "{}{}",
+            name.value,
+            get_var_initializer_rep(initializer, depth)
+        ),
+        sqparse::ast::Slot::ComputedProperty {
+            open: _,
+            name,
+            close: _,
+            initializer,
+        } => format!(
+            "[{}]{}",
+            get_expression_rep(&*name, depth),
+            get_var_initializer_rep(initializer, depth)
+        ),
+        sqparse::ast::Slot::Constructor {
+            function,
+            constructor: _,
+            definition,
+        } => format!(
+            "{}constructor{}",
+            match function {
+                Some(_) => "function ",
+                None => "",
+            },
+            get_function_def_rep(definition, depth)
+        ),
+        sqparse::ast::Slot::Function {
+            return_type,
+            function,
+            name,
+            definition,
+        } => get_fragmented_named_function_rep(return_type, function, name, definition, depth),
+    }
 }
