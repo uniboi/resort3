@@ -104,7 +104,7 @@ pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize
             .iter()
             .map(|(name, _)| format!("{}::", name.value))
             .collect::<String>(),
-        f.name.last_item.value, // TODO: multiple namespaces
+        f.name.last_item.value,
         get_function_def_rep(&f.definition, depth)
     )
 }

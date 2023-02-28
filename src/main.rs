@@ -1,6 +1,8 @@
 mod array_rep;
 mod binary_rep;
 mod block_rep;
+mod class_rep;
+mod constructor_res;
 mod enum_rep;
 mod fix_rep;
 mod for_rep;
@@ -11,6 +13,7 @@ mod if_rep;
 mod literal_rep;
 mod parens_rep;
 mod property_rep;
+mod struct_rep;
 mod switch_rep;
 mod table_rep;
 mod try_rep;
@@ -19,9 +22,6 @@ mod utils;
 mod var_rep;
 mod while_rep;
 mod yields_rep;
-mod struct_rep;
-mod constructor_res;
-mod class_rep;
 
 use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
@@ -73,7 +73,7 @@ fn main() {
 
 fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
     let rep: String = match &statement {
-        StatementType::Empty(_) => todo!(),
+        StatementType::Empty(_) => String::new(),
         StatementType::Block(p) => get_block_rep(p, depth),
         StatementType::If(p) => get_if_rep(p, depth),
         StatementType::While(p) => get_while_rep(p, depth),
@@ -131,7 +131,15 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
         Expression::Binary(p) => get_binary_rep(p, depth),
         Expression::Prefix(p) => get_prefixed_expression_rep(p, depth),
         Expression::Postfix(p) => get_postfixed_expression_rep(p, depth),
-        Expression::Comma(_) => todo!(),
+        Expression::Comma(p) => format!(
+            "{}{}",
+            p.values
+                .items
+                .iter()
+                .map(|(value, _)| format!("{}, ", get_expression_rep(value, depth)))
+                .collect::<String>(),
+            get_expression_rep(&*p.values.last_item, depth)
+        ),
         Expression::Table(p) => get_table_rep(p, depth),
         Expression::Class(p) => get_class_expression_rep(p, depth),
         Expression::Array(p) => get_array_rep(p, depth),
