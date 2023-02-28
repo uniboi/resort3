@@ -26,7 +26,7 @@ mod class_rep;
 use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
 use block_rep::get_block_rep;
-use class_rep::{get_class_expression_rep};
+use class_rep::{get_class_expression_rep, get_class_statement_rep};
 use constructor_res::get_constructor_def_rep;
 use enum_rep::get_enum_rep;
 use fix_rep::{get_postfixed_expression_rep, get_prefixed_expression_rep};
@@ -88,7 +88,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::VarDefinition(p) => get_var_definition_list_rep(p, depth),
         StatementType::ConstructorDefinition(p) => get_constructor_def_rep(p, depth),
         StatementType::FunctionDefinition(p) => get_function_definition_rep(p, depth),
-        StatementType::ClassDefinition(_) => todo!(),
+        StatementType::ClassDefinition(p) => get_class_statement_rep(p, depth),
         StatementType::TryCatch(p) => get_try_rep(p, depth),
         StatementType::Throw(p) => throw_rep(p, depth),
         StatementType::Const(p) => get_const_rep(p, depth),

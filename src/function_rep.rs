@@ -149,7 +149,7 @@ fn get_call_params_rep(args: &Option<SeparatedListTrailing1<Expression>>, depth:
             if list.items.len() > 0 { ", " } else { "" },
             get_expression_rep(&list.last_item, depth)
         ),
-        None => String::from(""),
+        None => String::new(),
     }
 }
 
