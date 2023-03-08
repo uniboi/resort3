@@ -23,6 +23,7 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
         Type::Struct(t) => get_anon_struct_definition_rep(&t.definition, depth),
         Type::Reference(t) => format!("{}&", get_typed_type_rep(&*t.base, depth)),
         Type::Nullable(t) => format!("{} ornull", get_typed_type_rep(&*t.base, depth)),
+        Type::Var(_) => todo!(),
     }
 }
 
@@ -111,5 +112,6 @@ fn get_generic_type_content_rep(
         padding = " "; // This is required to compile since right bit shift (>>) will be lexed before any types
     }
 
-    format!("{padding}{}{padding}", rep)
+    // format!("{padding}{}{padding}", rep)
+	format!(" {rep} ")
 }

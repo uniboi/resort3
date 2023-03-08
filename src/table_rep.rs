@@ -1,7 +1,10 @@
-use sqparse::ast::{Slot, TableSlot};
+use sqparse::ast::{Preprocessable, PreprocessorIfExpression, Slot, TableSlot};
 
 use crate::{
-    function_rep::{get_function_def_rep, get_fragmented_named_function_rep}, get_expression_rep, utils::get_lead,
+    function_rep::{get_fragmented_named_function_rep, get_function_def_rep},
+    get_expression_rep,
+    preprocessed::get_preprocessable_rep,
+    utils::get_lead,
     var_rep::get_var_initializer_rep,
 };
 
@@ -9,20 +12,32 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
     let prop_inset = get_lead(depth + 1);
     let sep = format!(",\n{prop_inset}");
     let max_oneliner_items = 3; // TODO: read from config
+    let mut multiline = table.slots.len() > max_oneliner_items;
 
     if table.slots.len() == 0 {
         return format!("{{}}");
     }
 
-    if table.slots.len() > max_oneliner_items {
+    if !multiline {
+        for slot in &table.slots {
+            if matches!(slot, Preprocessable::PREPROCESSED(_)) {
+                multiline = true;
+                break;
+            }
+        }
+    }
+
+    if multiline {
         format!(
-            "{{{}\n{}{}\n{}}}",
-            prop_inset,
+            "{{\n{}{}\n{}}}",
             prop_inset,
             table
                 .slots
                 .iter()
-                .map(|slot| get_table_pair_rep(slot, depth))
+                .map(|slot| match slot {
+                    Preprocessable::PREPROCESSED(p) => pp_rep(p, depth + 1),
+                    Preprocessable::UNCONDITIONAL(slot) => get_table_pair_rep(slot, depth),
+                })
                 .collect::<Vec<_>>()
                 .join(&sep),
             get_lead(depth)
@@ -33,11 +48,33 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
             table
                 .slots
                 .iter()
-                .map(|slot| get_table_pair_rep(slot, depth))
+                .map(|slot| match slot {
+                    Preprocessable::PREPROCESSED(_) =>
+                        todo!("inline preprocessed slots not implemented"),
+                    Preprocessable::UNCONDITIONAL(slot) => get_table_pair_rep(slot, depth),
+                })
                 .collect::<Vec<_>>()
                 .join(", ")
         )
     }
+}
+
+fn pp_rep(p: &PreprocessorIfExpression<Vec<Preprocessable<TableSlot>>>, depth: usize) -> String {
+	let lead = get_lead(depth + 1);
+    get_preprocessable_rep(
+        p,
+        |contents: &Vec<Preprocessable<TableSlot>>, depth| -> String {
+            contents
+                .iter()
+                .map(|c| match c {
+                    Preprocessable::PREPROCESSED(p) => format!("{lead}{}", pp_rep(p, depth + 1)),
+                    Preprocessable::UNCONDITIONAL(c) => format!("{lead}{}", get_table_pair_rep(c, depth)),
+                })
+                .collect::<Vec<_>>()
+                .join("\n")
+        },
+        depth,
+    )
 }
 
 pub fn get_table_pair_rep(s: &TableSlot, depth: usize) -> String {

@@ -22,6 +22,7 @@ mod utils;
 mod var_rep;
 mod while_rep;
 mod yields_rep;
+mod preprocessed;
 
 use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
@@ -63,7 +64,7 @@ fn main() {
     let source = fs::read_to_string(path).expect("Failed reading file");
 
     let tokens = tokenize(&source, Flavor::SquirrelRespawn).unwrap();
-    let ast = parse(&tokens).unwrap();
+    let ast = parse(&tokens, Flavor::SquirrelRespawn).unwrap();
 
     // println!("{ast:#?}")
     for statement in ast.statements {
@@ -104,6 +105,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::Global(p) => get_global_rep(p, depth),
         StatementType::GlobalizeAllFunctions(_) => String::from("globalize_all_functions"),
         StatementType::Untyped(_) => String::from("untyped"),
+        StatementType::Preprocessed(_) => todo!(),
     };
     format!("{rep}")
 }
@@ -159,5 +161,7 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
                 get_expression_rep(&*p.value, depth)
             )
         }
+        Expression::Lambda(_) => todo!(),
+        Expression::Preprocessed(_) => todo!(),
     }
 }

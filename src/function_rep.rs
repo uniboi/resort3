@@ -1,6 +1,6 @@
 use sqparse::{
     ast::{
-        CallExpression, Expression, FunctionDefinition, FunctionDefinitionStatement,
+        CallArgument, CallExpression, Expression, FunctionDefinition, FunctionDefinitionStatement,
         FunctionEnvironment, FunctionExpression, FunctionParam, FunctionParams, Identifier,
         SeparatedListTrailing1, Type,
     },
@@ -137,20 +137,24 @@ pub fn get_call_rep(p: &CallExpression, depth: usize) -> String {
     )
 }
 
-fn get_call_params_rep(args: &Option<SeparatedListTrailing1<Expression>>, depth: usize) -> String {
-    match args {
-        Some(list) => format!(
-            " {}{}{} ",
-            list.items
-                .iter()
-                .map(|(expression, _)| get_expression_rep(expression, depth))
-                .collect::<Vec<_>>()
-                .join(", "),
-            if list.items.len() > 0 { ", " } else { "" },
-            get_expression_rep(&list.last_item, depth)
-        ),
-        None => String::new(),
-    }
+fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
+    args.iter()
+        .map(|arg| get_expression_rep(&*arg.value, depth))
+        .collect::<Vec<_>>()
+        .join(", ")
+    // match args {
+    //     Some(list) => format!(
+    //         " {}{}{} ",
+    //         list.items
+    //             .iter()
+    //             .map(|(expression, _)| get_expression_rep(expression, depth))
+    //             .collect::<Vec<_>>()
+    //             .join(", "),
+    //         if list.items.len() > 0 { ", " } else { "" },
+    //         get_expression_rep(&list.last_item, depth)
+    //     ),
+    //     None => String::new(),
+    // }
 }
 
 pub fn get_fragmented_named_function_rep(

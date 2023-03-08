@@ -17,19 +17,20 @@ pub fn get_anon_struct_definition_rep(t: &StructDefinition, depth: usize) -> Str
 }
 
 fn get_struct_def_rep(def: &StructDefinition, depth: usize) -> String {
-    let lead = get_lead(depth);
-    def.properties
-        .iter()
-        .map(|property| {
-            format!(
-                "\n{lead}{} {}{}",
-                get_typed_type_rep(&property.type_, depth),
-                property.name.value,
-                match &property.initializer {
-                    Some(initializer) => get_var_initializer_rep(initializer, depth),
-                    None => String::new(),
-                }
-            )
-        })
-        .collect::<String>()
+	todo!()
+    // let lead = get_lead(depth);
+    // def.properties
+    //     .iter()
+    //     .map(|property| {
+    //         format!(
+    //             "\n{lead}{} {}{}",
+    //             get_typed_type_rep(&property.type_, depth),
+    //             property.name.value,
+    //             match &property.initializer {
+    //                 Some(initializer) => get_var_initializer_rep(initializer, depth),
+    //                 None => String::new(),
+    //             }
+    //         )
+    //     })
+    //     .collect::<String>()
 }

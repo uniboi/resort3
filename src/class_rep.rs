@@ -28,6 +28,7 @@ fn get_class_def_rep(def: &ClassDefinition, depth: usize) -> String {
     )
 }
 
+// TODO: Add class attributes
 fn get_class_members_rep(members: &Vec<ClassMember>, depth: usize) -> String {
     let lead = get_lead(depth);
     format!(

@@ -91,8 +91,6 @@ dependencies = [
 [[package]]
 name = "sqparse"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3ad059d0d1a202b6c75204126640d1c15340dff2f91f365468bcab36d26d973"
 dependencies = [
  "lazy_static",
  "lexical",
