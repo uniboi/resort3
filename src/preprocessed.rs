@@ -15,26 +15,28 @@ pub fn get_preprocessable_rep<T, FnRep: Fn(&T, usize) -> String>(
     )
 }
 
-pub fn pp_rep<T, FnRep: Fn(&T, usize) -> String>(
+pub fn get_possibly_preprocessed_rep<T, FnRep: Fn(&T, usize) -> String>(
     p: &PreprocessorIfExpression<Vec<Preprocessable<T>>>,
-	rep: FnRep,
+    rep: FnRep,
     depth: usize,
 ) -> String {
     let lead = get_lead(depth + 1);
-    get_preprocessable_rep(
-        p,
-        |contents: &Vec<Preprocessable<T>>, depth| -> String {
-            contents
-                .iter()
-                .map(|c| match c {
-                    Preprocessable::PREPROCESSED(p) => format!("{lead}{}", pp_rep(p, &rep, depth + 1)),
-                    Preprocessable::UNCONDITIONAL(c) => {
-                        format!("{lead}{}", rep(c, depth))
+    let f = |contents: &Vec<Preprocessable<T>>, depth| -> String {
+        contents
+            .iter()
+            .map(|c| {
+                format!(
+                    "{lead}{}",
+                    match c {
+                        Preprocessable::PREPROCESSED(p) =>
+                        // format!(""),
+                            get_possibly_preprocessed_rep(p, &rep, depth),
+                        Preprocessable::UNCONDITIONAL(c) => rep(c, depth),
                     }
-                })
-                .collect::<Vec<_>>()
-                .join("\n")
-        },
-        depth,
-    )
+                )
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+    get_preprocessable_rep(p, f, depth)
 }

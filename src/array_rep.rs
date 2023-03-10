@@ -31,7 +31,7 @@ fn get_array_oneliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> 
             return get_array_multiliner_rep(exp, depth);
         }
     }
-	
+
     let spread = "...";
     let rep = exp
         .values
@@ -63,7 +63,7 @@ fn get_array_multiliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -
         .map(|v| match v {
             Preprocessable::PREPROCESSED(v) => {
                 // get_preprocessable_rep(&*v, |p| format!("TODO!"), depth)
-				todo!()
+                todo!()
             }
             Preprocessable::UNCONDITIONAL(v) => get_expression_rep(&*v.value, depth),
         })
