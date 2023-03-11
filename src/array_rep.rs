@@ -1,10 +1,19 @@
 use sqparse::ast::Preprocessable;
 
-use crate::{get_expression_rep, preprocessed::get_preprocessable_rep, utils::get_lead};
+use crate::{get_expression_rep, preprocessed::get_preprocessed_rep, utils::get_lead};
 
 pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> String {
     let padding = " "; // TODO: read from config
     let max_oneliner_items = 5; // TODO: read from config
+
+    let mut oneliner = exp.values.len() <= max_oneliner_items;
+    for v in &exp.values {
+        if matches!(v, Preprocessable::PREPROCESSED(_)) {
+            oneliner = false;
+            break;
+        }
+    }
+
     format!(
         "[{}]",
         if exp.values.len() == 0 {
@@ -12,7 +21,7 @@ pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> Strin
                 Some(_) => format!(" ... "),
                 None => String::new(),
             }
-        } else if exp.values.len() <= max_oneliner_items {
+        } else if oneliner {
             format!("{padding}{}{padding}", get_array_oneliner_rep(exp, depth))
         } else {
             format!(
@@ -26,12 +35,6 @@ pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> Strin
 }
 
 fn get_array_oneliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> String {
-    for v in &exp.values {
-        if matches!(v, Preprocessable::PREPROCESSED(_)) {
-            return get_array_multiliner_rep(exp, depth);
-        }
-    }
-
     let spread = "...";
     let rep = exp
         .values
@@ -51,7 +54,7 @@ fn get_array_oneliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> 
                 } else {
                     format!("{spread}")
                 },
-            None => String::from(""),
+            None => String::new(),
         }
     )
 }
@@ -62,18 +65,19 @@ fn get_array_multiliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -
         .iter()
         .map(|v| match v {
             Preprocessable::PREPROCESSED(v) => {
-                // get_preprocessable_rep(&*v, |p| format!("TODO!"), depth)
-                todo!()
+                get_preprocessed_rep(&*v, &|v, depth| get_expression_rep(&*v.value, depth), depth)
             }
-            Preprocessable::UNCONDITIONAL(v) => get_expression_rep(&*v.value, depth),
+            Preprocessable::UNCONDITIONAL(v) => {
+                format!("{},", get_expression_rep(&*v.value, depth))
+            }
         })
         .collect::<Vec<_>>()
-        .join(&format!(",\n{}", get_lead(depth)));
+        .join(&format!("\n{}", get_lead(depth)));
     format!(
         "{rep}{}",
         match exp.spread {
             Some(_) => format!(",\n{}...", get_lead(depth)),
-            None => String::from(""),
+            None => String::new(),
         }
     )
 }

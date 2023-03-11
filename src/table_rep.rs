@@ -1,9 +1,9 @@
-use sqparse::ast::{Preprocessable, PreprocessorIfExpression, Slot, TableSlot};
+use sqparse::ast::{Preprocessable, Slot, TableSlot};
 
 use crate::{
     function_rep::{get_fragmented_named_function_rep, get_function_def_rep},
     get_expression_rep,
-    preprocessed::{get_preprocessable_rep, get_possibly_preprocessed_rep},
+    preprocessed::get_preprocessed_rep,
     utils::get_lead,
     var_rep::get_var_initializer_rep,
 };
@@ -35,8 +35,8 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
                 .slots
                 .iter()
                 .map(|slot| match slot {
-                    // Preprocessable::PREPROCESSED(p) => pp_rep(p, depth + 1), // this works but it's hardcoded
-                    Preprocessable::PREPROCESSED(p) => get_possibly_preprocessed_rep(p, get_table_pair_rep, depth + 1),
+                    Preprocessable::PREPROCESSED(p) =>
+                        get_preprocessed_rep(p, &get_table_pair_rep, depth + 1),
                     Preprocessable::UNCONDITIONAL(slot) => get_table_pair_rep(slot, depth),
                 })
                 .collect::<Vec<_>>()
@@ -58,24 +58,6 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
                 .join(", ")
         )
     }
-}
-
-fn pp_rep(p: &PreprocessorIfExpression<Vec<Preprocessable<TableSlot>>>, depth: usize) -> String {
-	let lead = get_lead(depth + 1);
-    get_preprocessable_rep(
-        p,
-        &|contents: &Vec<Preprocessable<TableSlot>>, depth| -> String {
-            contents
-                .iter()
-                .map(|c| match c {
-                    Preprocessable::PREPROCESSED(p) => format!("{lead}{}", pp_rep(p, depth + 1)),
-                    Preprocessable::UNCONDITIONAL(c) => format!("{lead}{}", get_table_pair_rep(c, depth)),
-                })
-                .collect::<Vec<_>>()
-                .join("\n")
-        },
-        depth,
-    )
 }
 
 pub fn get_table_pair_rep(s: &TableSlot, depth: usize) -> String {
