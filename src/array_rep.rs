@@ -1,7 +1,10 @@
-use sqparse::{ast::Preprocessable, token::Token};
+use sqparse::{ast::Preprocessable};
 
 use crate::{
-    get_expression_rep, preprocessed::get_preprocessed_rep, tokens::get_token, utils::get_lead,
+    get_expression_rep,
+    preprocessed::get_preprocessed_rep,
+    tokens::get_token,
+    utils::{get_lead, get_optional_seperator_rep},
 };
 
 pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> String {
@@ -83,11 +86,4 @@ fn get_array_multiliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -
             None => String::new(),
         }
     )
-}
-
-fn get_optional_seperator_rep(sep: &Option<&Token>) -> String {
-    match &sep {
-        Some(sep) => get_token(sep, ","),
-        None => String::from(","),
-    }
 }
