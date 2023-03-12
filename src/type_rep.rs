@@ -42,9 +42,9 @@ fn get_functionref_type_rep(f: &sqparse::ast::FunctionRefType, depth: usize) -> 
     let padding = if args_rep.len() > 0 { " " } else { "" }; // TODO: read from config
     format!(
         "{} {}{}{padding}{args_rep}{padding}{}",
+        get_boxed_type_rep(&f.return_type, depth),
         get_token(f.functionref, "functionref"),
         get_token(f.open, "("),
-        get_boxed_type_rep(&f.return_type, depth),
         get_token(f.close, ")"),
     )
 }
@@ -64,16 +64,18 @@ fn get_functionref_args_rep(
         "{}",
         match args {
             Some(args) => format!(
-                "{}{}{}",
+                "{}{}",
                 args.items
                     .iter()
-                    .map(|(arg, _)| get_functionref_arg_rep(&arg, depth))
-                    .collect::<Vec<_>>()
-                    .join(", "),
-                if args.items.len() > 0 { ", " } else { "" },
+                    .map(|(arg, comma)| format!(
+                        "{}{} ",
+                        get_functionref_arg_rep(&arg, depth),
+                        get_token(comma, ",")
+                    ))
+                    .collect::<String>(),
                 get_functionref_arg_rep(&args.last_item, depth),
             ),
-            None => String::from(""),
+            None => String::new(),
         }
     )
 }
