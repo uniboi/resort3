@@ -38,7 +38,7 @@ use global_rep::get_global_rep;
 use if_rep::get_if_rep;
 use literal_rep::{get_literal_rep, get_vector_rep};
 use parens_rep::get_parens_rep;
-use preprocessed::get_preprocessed_if_rep;
+use preprocessed::{get_preprocessed_if_rep, get_preprocessed_rep};
 use property_rep::get_property_rep;
 use sqparse::{
     ast::{Expression, StatementType},
@@ -107,7 +107,16 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::Global(p) => get_global_rep(p, depth),
         StatementType::GlobalizeAllFunctions(_) => String::from("globalize_all_functions"),
         StatementType::Untyped(_) => String::from("untyped"),
-        StatementType::Preprocessed(_) => todo!(),
+        StatementType::Preprocessed(p) => get_preprocessed_if_rep(
+            p.as_ref(),
+            &|contents, depth| {
+                contents
+                    .iter()
+                    .map(|c| format!("{}{}", get_lead(depth + 1), get_statement_rep(&c.ty, depth)))
+                    .collect::<String>()
+            },
+            depth,
+        ),
     };
     format!("{rep}")
 }
