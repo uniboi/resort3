@@ -1,26 +1,29 @@
 use crate::{get_expression_rep, tokens::get_token};
 
 pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression) -> String {
-    match &exp.literal {
-        sqparse::token::LiteralToken::Int(v, base) => get_integer_rep(exp, v, base),
-        sqparse::token::LiteralToken::Char(c) => format!("'{c}'"),
-        sqparse::token::LiteralToken::Float(f) => {
-            let start_at_dot = false; // TODO: read from config
-            let rep = format!("{f}");
+    get_token(
+        exp.token,
+        &match &exp.literal {
+            sqparse::token::LiteralToken::Int(v, base) => get_integer_rep(exp, v, base),
+            sqparse::token::LiteralToken::Char(c) => format!("'{c}'"),
+            sqparse::token::LiteralToken::Float(f) => {
+                let start_at_dot = false; // TODO: read from config
+                let rep = format!("{f}");
 
-            if start_at_dot {
-                rep[if &exp.token.range.end - &exp.token.range.start < rep.len() {
-                    1
+                if start_at_dot {
+                    rep[if &exp.token.range.end - &exp.token.range.start < rep.len() {
+                        1
+                    } else {
+                        0
+                    } as usize..]
+                        .to_owned()
                 } else {
-                    0
-                } as usize..]
-                    .to_owned()
-            } else {
-                rep
+                    rep
+                }
             }
-        }
-        sqparse::token::LiteralToken::String(s) => get_string_rep(s),
-    }
+            sqparse::token::LiteralToken::String(s) => get_string_rep(s),
+        },
+    )
 }
 
 fn get_integer_rep(
