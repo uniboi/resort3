@@ -1,6 +1,6 @@
 use sqparse::ast::{BinaryExpression, BinaryOperator};
 
-use crate::get_expression_rep;
+use crate::{get_expression_rep, tokens::get_token};
 
 pub fn get_binary_rep(p: &BinaryExpression, depth: usize) -> String {
     format!(
@@ -12,35 +12,46 @@ pub fn get_binary_rep(p: &BinaryExpression, depth: usize) -> String {
 }
 
 fn get_binary_operator_rep(op: &BinaryOperator) -> String {
-    String::from(match op {
-        sqparse::ast::BinaryOperator::Assign(_) => "=",
-        sqparse::ast::BinaryOperator::AssignNewSlot(_, _) => "<-",
-        sqparse::ast::BinaryOperator::AssignAdd(_) => "+=",
-        sqparse::ast::BinaryOperator::AssignSubtract(_) => "-=",
-        sqparse::ast::BinaryOperator::AssignMultiply(_) => "*=",
-        sqparse::ast::BinaryOperator::AssignDivide(_) => "/=",
-        sqparse::ast::BinaryOperator::AssignModulo(_) => "%=",
-        sqparse::ast::BinaryOperator::Add(_) => "+",
-        sqparse::ast::BinaryOperator::Subtract(_) => "-",
-        sqparse::ast::BinaryOperator::Multiply(_) => "*",
-        sqparse::ast::BinaryOperator::Divide(_) => "/",
-        sqparse::ast::BinaryOperator::Modulo(_) => "%",
-        sqparse::ast::BinaryOperator::Equal(_) => "==",
-        sqparse::ast::BinaryOperator::NotEqual(_) => "!=",
-        sqparse::ast::BinaryOperator::Less(_) => "<",
-        sqparse::ast::BinaryOperator::LessEqual(_) => "<=",
-        sqparse::ast::BinaryOperator::Greater(_) => ">",
-        sqparse::ast::BinaryOperator::GreaterEqual(_) => ">=",
-        sqparse::ast::BinaryOperator::ThreeWay(_) => "<=>",
-        sqparse::ast::BinaryOperator::LogicalAnd(_) => "&&",
-        sqparse::ast::BinaryOperator::LogicalOr(_) => "||",
-        sqparse::ast::BinaryOperator::BitwiseAnd(_) => "&",
-        sqparse::ast::BinaryOperator::BitwiseOr(_) => "|",
-        sqparse::ast::BinaryOperator::BitwiseXor(_) => "^",
-        sqparse::ast::BinaryOperator::ShiftLeft(_, _) => "<<",
-        sqparse::ast::BinaryOperator::ShiftRight(_, _) => ">>",
-        sqparse::ast::BinaryOperator::UnsignedShiftRight(_, _, _) => ">>>",
-        sqparse::ast::BinaryOperator::In(_) => "in",
-        sqparse::ast::BinaryOperator::Instanceof(_) => "instanceof",
-    })
+    match op {
+        sqparse::ast::BinaryOperator::Assign(token) => get_token(token, "="),
+        sqparse::ast::BinaryOperator::AssignNewSlot(head, tail) => {
+            format!("{}{}", get_token(head, "<"), get_token(tail, "-"))
+        }
+        sqparse::ast::BinaryOperator::AssignAdd(token) => get_token(token, "+="),
+        sqparse::ast::BinaryOperator::AssignSubtract(token) => get_token(token, "-="),
+        sqparse::ast::BinaryOperator::AssignMultiply(token) => get_token(token, "*="),
+        sqparse::ast::BinaryOperator::AssignDivide(token) => get_token(token, "/="),
+        sqparse::ast::BinaryOperator::AssignModulo(token) => get_token(token, "%="),
+        sqparse::ast::BinaryOperator::Add(token) => get_token(token, "+"),
+        sqparse::ast::BinaryOperator::Subtract(token) => get_token(token, "-"),
+        sqparse::ast::BinaryOperator::Multiply(token) => get_token(token, "*"),
+        sqparse::ast::BinaryOperator::Divide(token) => get_token(token, "/"),
+        sqparse::ast::BinaryOperator::Modulo(token) => get_token(token, "%"),
+        sqparse::ast::BinaryOperator::Equal(token) => get_token(token, "=="),
+        sqparse::ast::BinaryOperator::NotEqual(token) => get_token(token, "!="),
+        sqparse::ast::BinaryOperator::Less(token) => get_token(token, "<"),
+        sqparse::ast::BinaryOperator::LessEqual(token) => get_token(token, "<="),
+        sqparse::ast::BinaryOperator::Greater(token) => get_token(token, ">"),
+        sqparse::ast::BinaryOperator::GreaterEqual(token) => get_token(token, ">="),
+        sqparse::ast::BinaryOperator::ThreeWay(token) => get_token(token, "<=>"),
+        sqparse::ast::BinaryOperator::LogicalAnd(token) => get_token(token, "&&"),
+        sqparse::ast::BinaryOperator::LogicalOr(token) => get_token(token, "||"),
+        sqparse::ast::BinaryOperator::BitwiseAnd(token) => get_token(token, "&"),
+        sqparse::ast::BinaryOperator::BitwiseOr(token) => get_token(token, "|"),
+        sqparse::ast::BinaryOperator::BitwiseXor(token) => get_token(token, "^"),
+        sqparse::ast::BinaryOperator::ShiftLeft(head, tail) => {
+            format!("{}{}", get_token(head, "<"), get_token(tail, "<"))
+        }
+        sqparse::ast::BinaryOperator::ShiftRight(head, tail) => {
+            format!("{}{}", get_token(head, ">"), get_token(tail, ">"))
+        }
+        sqparse::ast::BinaryOperator::UnsignedShiftRight(head, body, tail) => format!(
+            "{}{}{}",
+            get_token(head, ">"),
+            get_token(body, ">"),
+            get_token(tail, ">")
+        ),
+        sqparse::ast::BinaryOperator::In(token) => get_token(token, "in"),
+        sqparse::ast::BinaryOperator::Instanceof(token) => get_token(token, "instanceof"),
+    }
 }
