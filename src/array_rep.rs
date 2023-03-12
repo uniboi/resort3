@@ -1,6 +1,8 @@
-use sqparse::ast::Preprocessable;
+use sqparse::{ast::Preprocessable, token::Token};
 
-use crate::{get_expression_rep, preprocessed::get_preprocessed_rep, utils::get_lead};
+use crate::{
+    get_expression_rep, preprocessed::get_preprocessed_rep, tokens::get_token, utils::get_lead,
+};
 
 pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> String {
     let padding = " "; // TODO: read from config
@@ -15,10 +17,11 @@ pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> Strin
     }
 
     format!(
-        "[{}]",
+        "{}{}{}",
+        get_token(exp.open, "["),
         if exp.values.len() == 0 {
             match &exp.spread {
-                Some(_) => format!(" ... "),
+                Some(t) => get_token(t, "..."),
                 None => String::new(),
             }
         } else if oneliner {
@@ -30,30 +33,30 @@ pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> Strin
                 get_array_multiliner_rep(exp, depth + 1),
                 get_lead(depth)
             )
-        }
+        },
+        get_token(exp.close, "]"),
     )
 }
 
 fn get_array_oneliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> String {
-    let spread = "...";
     let rep = exp
         .values
         .iter()
         .map(|v| match v {
             Preprocessable::PREPROCESSED(_) => panic!(), // this case is sorted out before
-            Preprocessable::UNCONDITIONAL(v) => get_expression_rep(&*v.value, depth),
+            Preprocessable::UNCONDITIONAL(v) => {
+                format!(
+                    "{}{} ",
+                    get_expression_rep(&*v.value, depth),
+                    get_optional_seperator_rep(&v.separator)
+                )
+            }
         })
-        .collect::<Vec<_>>()
-        .join(", ");
+        .collect::<String>();
     format!(
         "{rep}{}",
         match exp.spread {
-            Some(_) =>
-                if exp.values.len() > 0 {
-                    format!(", {spread}")
-                } else {
-                    format!("{spread}")
-                },
+            Some(t) => get_token(t, "..."),
             None => String::new(),
         }
     )
@@ -76,8 +79,15 @@ fn get_array_multiliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -
     format!(
         "{rep}{}",
         match exp.spread {
-            Some(_) => format!(",\n{}...", get_lead(depth)),
+            Some(t) => format!("\n{}{}", get_lead(depth), get_token(t, "...")),
             None => String::new(),
         }
     )
+}
+
+fn get_optional_seperator_rep(sep: &Option<&Token>) -> String {
+    match &sep {
+        Some(sep) => get_token(sep, ","),
+        None => String::from(","),
+    }
 }
