@@ -23,7 +23,7 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
         ),
         Type::Generic(p) => get_generic_type_rep(p, depth),
         Type::FunctionRef(p) => get_functionref_type_rep(p, depth),
-        Type::Struct(t) => get_anon_struct_definition_rep(&t.definition, depth),
+        Type::Struct(t) => get_anon_struct_definition_rep(t, depth),
         Type::Reference(t) => format!(
             "{}{}",
             get_typed_type_rep(&*t.base, depth),

@@ -1,26 +1,37 @@
-use sqparse::ast::{Preprocessable, StructDefinition, StructDefinitionStatement, StructProperty};
+use sqparse::ast::{
+    Preprocessable, StructDefinition, StructDefinitionStatement, StructProperty, StructType,
+};
 
 use crate::{
-    preprocessed::get_preprocessed_rep, type_rep::get_typed_type_rep, utils::get_lead,
-    var_rep::get_var_initializer_rep,
+    preprocessed::get_preprocessed_rep, tokens::get_token, type_rep::get_typed_type_rep,
+    utils::get_lead, var_rep::get_var_initializer_rep,
 };
 
 pub fn get_struct_definition_rep(p: &StructDefinitionStatement, depth: usize) -> String {
     let lead = get_lead(depth);
     format!(
-        "struct {}\n{lead}{{{}\n{lead}}}",
+        "{} {}\n{lead}{}{}\n{lead}{}",
+        get_token(p.struct_, "struct"),
         p.name.value,
-        get_struct_def_rep(&p.definition, depth + 1)
+        get_token(p.definition.open, "("),
+        get_struct_def_rep(&p.definition, depth + 1),
+        get_token(p.definition.close, ")"),
     )
 }
 
-pub fn get_anon_struct_definition_rep(t: &StructDefinition, depth: usize) -> String {
+pub fn get_anon_struct_definition_rep(p: &StructType, depth: usize) -> String {
     let lead = get_lead(depth);
-    format!("struct {{{}\n{lead}}}", get_struct_def_rep(t, depth + 1))
+    format!(
+        "{} {}{}\n{lead}{}",
+        get_token(p.struct_, "struct"),
+        get_token(p.definition.open, "("),
+        get_struct_def_rep(&p.definition, depth + 1),
+        get_token(p.definition.close, ")"),
+    )
 }
 
 fn get_struct_def_rep(def: &StructDefinition, depth: usize) -> String {
-	let lead = get_lead(depth);
+    let lead = get_lead(depth);
     def.properties
         .iter()
         .map(|property| match property {
