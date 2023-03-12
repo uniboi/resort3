@@ -1,4 +1,4 @@
-use crate::get_expression_rep;
+use crate::{get_expression_rep, tokens::get_token};
 
 pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression) -> String {
     match &exp.literal {
@@ -56,9 +56,13 @@ fn get_string_rep(exp: &sqparse::token::StringToken) -> String {
 pub fn get_vector_rep(exp: &sqparse::ast::VectorExpression, depth: usize) -> String {
     let padding = " "; // TODO: read from config
     format!(
-        "<{padding}{}, {}, {}{padding}>",
+        "{}{padding}{}{} {}{} {}{padding}{}",
+        get_token(exp.open, "<"),
         get_expression_rep(&exp.x, depth),
+        get_token(exp.comma_1, ","),
         get_expression_rep(&exp.y, depth),
-        get_expression_rep(&exp.z, depth)
+        get_token(exp.comma_2, ","),
+        get_expression_rep(&exp.z, depth),
+        get_token(exp.close, ">"),
     )
 }
