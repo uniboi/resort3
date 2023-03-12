@@ -1,20 +1,24 @@
 use sqparse::ast::{ReturnStatement, YieldStatement};
 
-use crate::get_expression_rep;
+use crate::{get_expression_rep, tokens::get_token};
 
 pub fn get_delaythread_rep(expr: &sqparse::ast::DelayThreadStatement, depth: usize) -> String {
     let padding = " "; // TODO: read from config
     let pre = ""; // TODO: read from config
     format!(
-        "delaythread{pre}({padding}{}{padding}) {}",
+        "{}{pre}{}{padding}{}{padding}{} {}",
+        get_token(expr.delay_thread, "delaythread"),
+        get_token(expr.open, "("),
         get_expression_rep(&*expr.duration, depth),
+        get_token(expr.close, ")"),
         get_expression_rep(&*expr.value, depth)
     )
 }
 
 pub fn get_return_rep(e: &ReturnStatement, depth: usize) -> String {
     format!(
-        "return{}",
+        "{}{}",
+        get_token(e.return_, "return"),
         match &e.value {
             Some(exp) => format!(" {}", get_expression_rep(exp, depth)),
             None => String::new(),
@@ -24,7 +28,8 @@ pub fn get_return_rep(e: &ReturnStatement, depth: usize) -> String {
 
 pub fn get_yield_rep(e: &YieldStatement, depth: usize) -> String {
     format!(
-        "yield{}",
+        "{}{}",
+        get_token(e.yield_, "yield"),
         match &e.value {
             Some(exp) => format!(" {}", get_expression_rep(exp, depth)),
             None => String::new(),
