@@ -4,18 +4,21 @@ use crate::{
     function_rep::{get_fragmented_named_function_rep, get_function_def_rep},
     get_expression_rep,
     preprocessed::get_preprocessed_rep,
+    tokens::get_token,
     utils::get_lead,
     var_rep::get_var_initializer_rep,
 };
 
 pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> String {
     let prop_inset = get_lead(depth + 1);
-    let sep = format!(",\n{prop_inset}");
     let max_oneliner_items = 3; // TODO: read from config
     let mut multiline = table.slots.len() > max_oneliner_items;
 
+    let open = get_token(table.open, "(");
+    let close = get_token(table.close, ")");
+
     if table.slots.len() == 0 {
-        return format!("{{}}");
+        return format!("{open}{close}");
     }
 
     if !multiline {
@@ -29,33 +32,47 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
 
     if multiline {
         format!(
-            "{{\n{}{}\n{}}}",
+            "{open}\n{}{}\n{}{close}",
             prop_inset,
             table
                 .slots
                 .iter()
                 .map(|slot| match slot {
-                    Preprocessable::PREPROCESSED(p) =>
-                        get_preprocessed_rep(p, &get_table_pair_rep, depth + 1),
-                    Preprocessable::UNCONDITIONAL(slot) => get_table_pair_rep(slot, depth),
+                    Preprocessable::PREPROCESSED(p) => format!(
+                        "\n{prop_inset}{}",
+                        get_preprocessed_rep(p, &get_table_pair_rep, depth + 1)
+                    ),
+                    Preprocessable::UNCONDITIONAL(slot) => format!(
+                        "\n{prop_inset}{}{}",
+                        get_table_pair_rep(slot, depth),
+                        match slot.comma {
+                            Some(comma) => get_token(comma, ","),
+                            None => String::new(),
+                        }
+                    ),
                 })
-                .collect::<Vec<_>>()
-                .join(&sep),
+                .collect::<String>(),
             get_lead(depth)
         )
     } else {
         format!(
-            "{{ {} }}",
+            "{open} {} {close}",
             table
                 .slots
                 .iter()
                 .map(|slot| match slot {
                     Preprocessable::PREPROCESSED(_) =>
                         todo!("inline preprocessed slots not implemented"),
-                    Preprocessable::UNCONDITIONAL(slot) => get_table_pair_rep(slot, depth),
+                    Preprocessable::UNCONDITIONAL(slot) => format!(
+                        "{}{}",
+                        get_table_pair_rep(slot, depth),
+                        match slot.comma {
+                            Some(comma) => get_token(comma, ","),
+                            None => String::new(),
+                        }
+                    ),
                 })
-                .collect::<Vec<_>>()
-                .join(", ")
+                .collect::<String>()
         )
     }
 }
@@ -67,10 +84,14 @@ pub fn get_table_pair_rep(s: &TableSlot, depth: usize) -> String {
             sqparse::ast::TableSlotType::Slot(slot) => get_slot_rep(slot, depth),
             sqparse::ast::TableSlotType::JsonProperty {
                 name,
-                name_token: _,
-                colon: _,
+                name_token, // TODO: unused?
+                colon,
                 value,
-            } => format!("\"{name}\" = {}", get_expression_rep(&*value, depth)),
+            } => format!(
+                "\"{name}\" {} {}",
+                get_token(colon, ":"),
+                get_expression_rep(&*value, depth)
+            ),
         }
     )
 }
@@ -83,25 +104,28 @@ pub fn get_slot_rep(s: &Slot, depth: usize) -> String {
             get_var_initializer_rep(initializer, depth)
         ),
         sqparse::ast::Slot::ComputedProperty {
-            open: _,
+            open,
             name,
-            close: _,
+            close,
             initializer,
         } => format!(
-            "[{}]{}",
+            "{}{}{}{}",
+            get_token(open, "["),
             get_expression_rep(&*name, depth),
+            get_token(close, "]"),
             get_var_initializer_rep(initializer, depth)
         ),
         sqparse::ast::Slot::Constructor {
             function,
-            constructor: _,
+            constructor,
             definition,
         } => format!(
-            "{}constructor{}",
+            "{}{}{}",
             match function {
-                Some(_) => "function ",
-                None => "",
+                Some(function) => format!("{} ", get_token(function, "function")),
+                None => String::new(),
             },
+            get_token(constructor, "constructor"),
             get_function_def_rep(definition, depth)
         ),
         sqparse::ast::Slot::Function {
