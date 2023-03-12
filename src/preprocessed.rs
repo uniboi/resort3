@@ -3,7 +3,7 @@ use sqparse::ast::{
     PreprocessorIfExpression,
 };
 
-use crate::{get_expression_rep, utils::get_lead};
+use crate::{get_expression_rep, tokens::get_token, utils::get_lead};
 
 pub fn get_preprocessed_if_rep<T, FnRep: Fn(&T, usize) -> String>(
     p: &PreprocessorIfExpression<T>,
@@ -20,9 +20,11 @@ pub fn get_preprocessed_if_rep<T, FnRep: Fn(&T, usize) -> String>(
         None => String::new(),
     };
     format!(
-        "#if {}\n{}{elseif_rep}{else_rep}\n{lead}#endif",
+        "{} {}\n{}{elseif_rep}{else_rep}\n{lead}{}",
+        get_token(p.if_, "#if"),
         get_expression_rep(&*p.condition, depth),
-        rep(&p.content, depth)
+        rep(&p.content, depth),
+        get_token(p.endif, "#endif"),
     )
 }
 
@@ -37,7 +39,8 @@ fn get_preprocessed_elseif_rep<T, FnRep: Fn(&T, usize) -> String>(
         None => String::new(),
     };
     format!(
-        "\n{lead}#elseif {}\n{}{elseif_rep}",
+        "\n{lead}{} {}\n{}{elseif_rep}",
+        get_token(p.elseif_, "#elseif"),
         get_expression_rep(&*p.condition, depth),
         rep(&p.content, depth)
     )
@@ -48,7 +51,12 @@ fn get_preprocessed_else_rep<T, FnRep: Fn(&T, usize) -> String>(
     rep: FnRep,
     depth: usize,
 ) -> String {
-    format!("\n{}#else\n{}", get_lead(depth), rep(&p.content, depth))
+    format!(
+        "\n{}{}\n{}",
+        get_lead(depth),
+        get_token(p.else_, "#else"),
+        rep(&p.content, depth)
+    )
 }
 
 pub fn get_preprocessed_rep<T, FnRep: Fn(&T, usize) -> String>(
