@@ -17,6 +17,7 @@ mod property_rep;
 mod struct_rep;
 mod switch_rep;
 mod table_rep;
+mod tokens;
 mod try_rep;
 mod type_rep;
 mod utils;
@@ -38,7 +39,7 @@ use global_rep::get_global_rep;
 use if_rep::get_if_rep;
 use literal_rep::{get_literal_rep, get_vector_rep};
 use parens_rep::get_parens_rep;
-use preprocessed::{get_preprocessed_if_rep, get_preprocessed_rep};
+use preprocessed::get_preprocessed_if_rep;
 use property_rep::get_property_rep;
 use sqparse::{
     ast::{Expression, StatementType},
@@ -47,6 +48,7 @@ use sqparse::{
 use struct_rep::get_struct_definition_rep;
 use switch_rep::get_switch_rep;
 use table_rep::get_table_rep;
+use tokens::get_token;
 use try_rep::{get_try_rep, throw_rep};
 use type_rep::{get_typed_type_rep, get_typedef_rep};
 use utils::get_lead;
@@ -84,8 +86,8 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::Switch(p) => get_switch_rep(p, depth),
         StatementType::For(p) => get_for_rep(p, depth),
         StatementType::Foreach(p) => get_foreach_rep(p, depth),
-        StatementType::Break(_) => String::from("break"),
-        StatementType::Continue(_) => String::from("continue"),
+        StatementType::Break(p) => get_token(p.break_, "break"),
+        StatementType::Continue(p) => get_token(p.continue_, "continue"),
         StatementType::Return(p) => get_return_rep(p, depth),
         StatementType::Yield(p) => get_yield_rep(p, depth),
         StatementType::VarDefinition(p) => get_var_definition_list_rep(p, depth),
@@ -105,8 +107,10 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::StructDefinition(p) => get_struct_definition_rep(p, depth),
         StatementType::TypeDefinition(p) => get_typedef_rep(p, depth),
         StatementType::Global(p) => get_global_rep(p, depth),
-        StatementType::GlobalizeAllFunctions(_) => String::from("globalize_all_functions"),
-        StatementType::Untyped(_) => String::from("untyped"),
+        StatementType::GlobalizeAllFunctions(p) => {
+            get_token(p.globalize_all_functions, "globalize_all_functions")
+        }
+        StatementType::Untyped(p) => get_token(p.untyped, "untyped"),
         StatementType::Preprocessed(p) => get_preprocessed_if_rep(
             p.as_ref(),
             &|contents, depth| {

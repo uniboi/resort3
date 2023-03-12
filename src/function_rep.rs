@@ -1,8 +1,7 @@
 use sqparse::{
     ast::{
-        CallArgument, CallExpression, Expression, FunctionDefinition, FunctionDefinitionStatement,
-        FunctionEnvironment, FunctionExpression, FunctionParam, FunctionParams, Identifier,
-        SeparatedListTrailing1, Type,
+        CallArgument, CallExpression, FunctionDefinition, FunctionDefinitionStatement,
+        FunctionEnvironment, FunctionExpression, FunctionParam, FunctionParams, Identifier, Type,
     },
     token::Token,
 };
