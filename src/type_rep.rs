@@ -12,6 +12,7 @@ pub fn get_type_rep(ty: &Option<Type>, depth: usize) -> String {
 pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
     match &ty {
         Type::Local(_) => String::from("local"),
+		Type::Var(_) => String::from("var"),
         Type::Plain(t) => String::from(t.name.value),
         Type::Array(t) => format!(
             "{}[{}]",
@@ -23,7 +24,6 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
         Type::Struct(t) => get_anon_struct_definition_rep(&t.definition, depth),
         Type::Reference(t) => format!("{}&", get_typed_type_rep(&*t.base, depth)),
         Type::Nullable(t) => format!("{} ornull", get_typed_type_rep(&*t.base, depth)),
-        Type::Var(_) => todo!(),
     }
 }
 

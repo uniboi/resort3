@@ -12,6 +12,7 @@ mod global_rep;
 mod if_rep;
 mod literal_rep;
 mod parens_rep;
+mod preprocessed;
 mod property_rep;
 mod struct_rep;
 mod switch_rep;
@@ -22,7 +23,6 @@ mod utils;
 mod var_rep;
 mod while_rep;
 mod yields_rep;
-mod preprocessed;
 
 use array_rep::get_array_rep;
 use binary_rep::get_binary_rep;
@@ -38,6 +38,7 @@ use global_rep::get_global_rep;
 use if_rep::get_if_rep;
 use literal_rep::{get_literal_rep, get_vector_rep};
 use parens_rep::get_parens_rep;
+use preprocessed::get_preprocessed_if_rep;
 use property_rep::get_property_rep;
 use sqparse::{
     ast::{Expression, StatementType},
@@ -48,6 +49,7 @@ use switch_rep::get_switch_rep;
 use table_rep::get_table_rep;
 use try_rep::{get_try_rep, throw_rep};
 use type_rep::{get_typed_type_rep, get_typedef_rep};
+use utils::get_lead;
 use var_rep::{get_const_rep, get_var_definition_list_rep};
 use while_rep::{get_do_while_rep, get_while_rep};
 use yields_rep::{get_delaythread_rep, get_return_rep, get_yield_rep};
@@ -162,6 +164,18 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
             )
         }
         Expression::Lambda(_) => todo!(),
-        Expression::Preprocessed(_) => todo!(),
+        Expression::Preprocessed(p) => format!(
+            "\n{}{}",
+            get_lead(depth),
+            get_preprocessed_if_rep(
+                &*p,
+                &|content, depth| format!(
+                    "{}{}",
+                    get_lead(depth + 1),
+                    get_expression_rep(content, depth)
+                ),
+                depth,
+            )
+        ),
     }
 }
