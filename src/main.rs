@@ -11,7 +11,6 @@ mod function_rep;
 mod global_rep;
 mod if_rep;
 mod literal_rep;
-mod parens_rep;
 mod preprocessed;
 mod property_rep;
 mod struct_rep;
@@ -38,7 +37,6 @@ use function_rep::{get_call_rep, get_function_definition_rep, get_function_rep};
 use global_rep::get_global_rep;
 use if_rep::get_if_rep;
 use literal_rep::{get_literal_rep, get_vector_rep};
-use parens_rep::get_parens_rep;
 use preprocessed::get_preprocessed_if_rep;
 use property_rep::get_property_rep;
 use sqparse::{
@@ -129,7 +127,12 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
 
 fn get_expression_rep(expression: &Expression, depth: usize) -> String {
     match expression {
-        Expression::Parens(p) => get_parens_rep(&*p.value, depth),
+        Expression::Parens(p) => format!(
+            "{} {} {}",
+            get_token(p.open, "("),
+            get_expression_rep(&*p.value, depth),
+            get_token(p.close, ")")
+        ),
         Expression::Literal(p) => get_literal_rep(p),
         Expression::Var(p) => String::from(p.name.value),
         Expression::RootVar(p) => format!("::{}", p.name.value),

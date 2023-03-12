@@ -1,15 +1,17 @@
 use sqparse::ast::{IfStatement, StatementType};
 
 use crate::{
-    block_rep::get_block_rep, get_statement_rep, parens_rep::get_parens_rep, tokens::get_token,
+    block_rep::get_block_rep, get_expression_rep, get_statement_rep, tokens::get_token,
     utils::get_lead,
 };
 
 pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
     format!(
-        "{}{}{}",
+        "{}{} {} {}{}",
         get_token(stm.if_, "if"),
-        get_parens_rep(&*stm.condition, depth),
+        get_token(stm.open, "("),
+        get_expression_rep(&*stm.condition, depth),
+        get_token(stm.close, ")"),
         match &stm.ty {
             sqparse::ast::IfStatementType::NoElse { body } => get_if_body_rep(&*body, depth),
             sqparse::ast::IfStatementType::Else {

@@ -1,12 +1,14 @@
 use sqparse::ast::{SwitchCase, SwitchStatement};
 
-use crate::{get_expression_rep, get_statement_rep, parens_rep::get_parens_rep, utils::get_lead};
+use crate::{get_expression_rep, get_statement_rep, tokens::get_token, utils::get_lead};
 
 pub fn get_switch_rep(stm: &SwitchStatement, depth: usize) -> String {
     let lead = get_lead(depth);
     format!(
-        "switch{}\n{lead}{{\n{}\n{lead}}}",
-        get_parens_rep(&*stm.condition, depth),
+        "switch{} {} {}\n{lead}{{\n{}\n{lead}}}",
+        get_token(stm.open_condition, "("),
+        get_expression_rep(&*stm.condition, depth),
+        get_token(stm.close_condition, ")"),
         stm.cases
             .iter()
             .map(|case| get_case_rep(case, depth + 1))
