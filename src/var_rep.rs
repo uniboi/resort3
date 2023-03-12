@@ -3,7 +3,7 @@ use sqparse::ast::{
     VarInitializer,
 };
 
-use crate::{get_expression_rep, type_rep::get_typed_type_rep};
+use crate::{get_expression_rep, tokens::get_token, type_rep::get_typed_type_rep};
 
 pub fn get_const_rep(statement: &ConstDefinitionStatement, depth: usize) -> String {
     let type_rep = match &statement.const_type {
@@ -11,7 +11,8 @@ pub fn get_const_rep(statement: &ConstDefinitionStatement, depth: usize) -> Stri
         None => String::new(),
     };
     format!(
-        "const {type_rep}{}{}",
+        "{} {type_rep}{}{}",
+        get_token(statement.const_, "const"),
         statement.name.value,
         get_var_initializer_rep(&statement.initializer, depth)
     )
@@ -22,22 +23,20 @@ pub fn get_var_definition_list_rep(statement: &VarDefinitionStatement, depth: us
         "{} {}{}",
         get_typed_type_rep(&statement.type_, depth),
         get_definition_list_rep(&statement.definitions),
-		match &statement.definitions.last_item.initializer {
-			Some(initializer) => get_var_initializer_rep(initializer, depth),
-			None => String::new(),
-		}
+        match &statement.definitions.last_item.initializer {
+            Some(initializer) => get_var_initializer_rep(initializer, depth),
+            None => String::new(),
+        }
     )
 }
 
 fn get_definition_list_rep(list: &SeparatedListTrailing1<VarDefinition>) -> String {
     format!(
-        "{}{}{}",
+        "{}{}",
         list.items
             .iter()
-            .map(|(v, _)| v.name.value)
-            .collect::<Vec<_>>()
-            .join(", "),
-        if list.items.len() > 0 { ", " } else { "" },
+            .map(|(v, comma)| format!("{}{} ", v.name.value, get_token(comma, ",")))
+            .collect::<String>(),
         list.last_item.name.value
     )
 }
@@ -47,12 +46,16 @@ pub fn get_var_definition_rep(statement: &VarDefinition, depth: usize) -> String
         "{}{}",
         statement.name.value,
         match &statement.initializer {
-            Some(initializer) => get_var_initializer_rep(initializer,depth),
+            Some(initializer) => get_var_initializer_rep(initializer, depth),
             None => String::new(),
         }
     )
 }
 
 pub fn get_var_initializer_rep(statement: &VarInitializer, depth: usize) -> String {
-    format!(" = {}", get_expression_rep(&*statement.value, depth))
+    format!(
+        " {} {}",
+        get_token(statement.assign, "="),
+        get_expression_rep(&*statement.value, depth)
+    )
 }
