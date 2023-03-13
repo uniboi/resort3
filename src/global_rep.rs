@@ -12,7 +12,7 @@ use crate::{
 pub fn get_global_rep(statement: &GlobalStatement, depth: usize) -> String {
     let global_rep = match &statement.definition {
         sqparse::ast::GlobalDefinition::Function { function, name } => {
-            format!("{} {}", get_token(function, "function"), name.value)
+            format!("{} {}", get_token(function, "function", depth), name.value)
         }
         sqparse::ast::GlobalDefinition::UntypedVar { name, initializer } => {
             const EXPLICIT_TYPES: bool = false; // TODO: read from config
@@ -34,5 +34,5 @@ pub fn get_global_rep(statement: &GlobalStatement, depth: usize) -> String {
         sqparse::ast::GlobalDefinition::Struct(p) => get_struct_definition_rep(p, depth),
         sqparse::ast::GlobalDefinition::Type(p) => get_typedef_rep(p, depth),
     };
-    format!("{} {global_rep}", get_token(statement.global, "global"))
+    format!("{} {global_rep}", get_token(statement.global, "global", depth))
 }

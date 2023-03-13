@@ -11,11 +11,11 @@ pub fn get_struct_definition_rep(p: &StructDefinitionStatement, depth: usize) ->
     let lead = get_lead(depth);
     format!(
         "{} {}\n{lead}{}{}\n{lead}{}",
-        get_token(p.struct_, "struct"),
+        get_token(p.struct_, "struct", depth),
         p.name.value,
-        get_token(p.definition.open, "("),
+        get_token(p.definition.open, "{", depth),
         get_struct_def_rep(&p.definition, depth + 1),
-        get_token(p.definition.close, ")"),
+        get_token(p.definition.close, "}", depth),
     )
 }
 
@@ -23,10 +23,10 @@ pub fn get_anon_struct_definition_rep(p: &StructType, depth: usize) -> String {
     let lead = get_lead(depth);
     format!(
         "{} {}{}\n{lead}{}",
-        get_token(p.struct_, "struct"),
-        get_token(p.definition.open, "("),
+        get_token(p.struct_, "struct", depth),
+        get_token(p.definition.open, "{", depth),
         get_struct_def_rep(&p.definition, depth + 1),
-        get_token(p.definition.close, ")"),
+        get_token(p.definition.close, "}", depth),
     )
 }
 

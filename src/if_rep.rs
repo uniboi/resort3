@@ -8,10 +8,10 @@ use crate::{
 pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
     format!(
         "{}{} {} {}{}",
-        get_token(stm.if_, "if"),
-        get_token(stm.open, "("),
+        get_token(stm.if_, "if", depth),
+        get_token(stm.open, "(", depth),
         get_expression_rep(&*stm.condition, depth),
-        get_token(stm.close, ")"),
+        get_token(stm.close, ")", depth),
         match &stm.ty {
             sqparse::ast::IfStatementType::NoElse { body } => get_if_body_rep(&*body, depth),
             sqparse::ast::IfStatementType::Else {
@@ -22,7 +22,7 @@ pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
                 "{}\n{}{}{}",
                 get_if_body_rep(&body.ty, depth),
                 get_lead(depth),
-                get_token(else_, "else"),
+                get_token(else_, "else", depth),
                 get_if_body_rep(&*else_body, depth)
             ),
         }

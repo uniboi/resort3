@@ -14,8 +14,8 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
     let max_oneliner_items = 3; // TODO: read from config
     let mut multiline = table.slots.len() > max_oneliner_items;
 
-    let open = get_token(table.open, "(");
-    let close = get_token(table.close, ")");
+    let open = get_token(table.open, "{", depth);
+    let close = get_token(table.close, "}", depth);
 
     if table.slots.len() == 0 {
         return format!("{open}{close}");
@@ -46,7 +46,7 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
                         "\n{prop_inset}{}{}",
                         get_table_pair_rep(slot, depth),
                         match slot.comma {
-                            Some(comma) => get_token(comma, ","),
+                            Some(comma) => get_token(comma, ",", depth),
                             None => String::new(),
                         }
                     ),
@@ -67,7 +67,7 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
                         "{}{}",
                         get_table_pair_rep(slot, depth),
                         match slot.comma {
-                            Some(comma) => get_token(comma, ","),
+                            Some(comma) => get_token(comma, ",", depth),
                             None => String::new(),
                         }
                     ),
@@ -89,7 +89,7 @@ pub fn get_table_pair_rep(s: &TableSlot, depth: usize) -> String {
                 value,
             } => format!(
                 "\"{name}\" {} {}",
-                get_token(colon, ":"),
+                get_token(colon, ":", depth),
                 get_expression_rep(&*value, depth)
             ),
         }
@@ -110,9 +110,9 @@ pub fn get_slot_rep(s: &Slot, depth: usize) -> String {
             initializer,
         } => format!(
             "{}{}{}{}",
-            get_token(open, "["),
+            get_token(open, "[", depth),
             get_expression_rep(&*name, depth),
-            get_token(close, "]"),
+            get_token(close, "]", depth),
             get_var_initializer_rep(initializer, depth)
         ),
         sqparse::ast::Slot::Constructor {
@@ -122,10 +122,10 @@ pub fn get_slot_rep(s: &Slot, depth: usize) -> String {
         } => format!(
             "{}{}{}",
             match function {
-                Some(function) => format!("{} ", get_token(function, "function")),
+                Some(function) => format!("{} ", get_token(function, "function", depth)),
                 None => String::new(),
             },
-            get_token(constructor, "constructor"),
+            get_token(constructor, "constructor", depth),
             get_function_def_rep(definition, depth)
         ),
         sqparse::ast::Slot::Function {

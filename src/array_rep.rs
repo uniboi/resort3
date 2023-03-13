@@ -21,10 +21,10 @@ pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> Strin
 
     format!(
         "{}{}{}",
-        get_token(exp.open, "["),
+        get_token(exp.open, "[", depth),
         if exp.values.len() == 0 {
             match &exp.spread {
-                Some(t) => get_token(t, "..."),
+                Some(t) => get_token(t, "...", depth),
                 None => String::new(),
             }
         } else if oneliner {
@@ -37,7 +37,7 @@ pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> Strin
                 get_lead(depth)
             )
         },
-        get_token(exp.close, "]"),
+        get_token(exp.close, "]", depth),
     )
 }
 
@@ -51,7 +51,7 @@ fn get_array_oneliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> 
                 format!(
                     "{}{} ",
                     get_expression_rep(&*v.value, depth),
-                    get_optional_seperator_rep(&v.separator)
+                    get_optional_seperator_rep(&v.separator, depth)
                 )
             }
         })
@@ -59,7 +59,7 @@ fn get_array_oneliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> 
     format!(
         "{rep}{}",
         match exp.spread {
-            Some(t) => get_token(t, "..."),
+            Some(t) => get_token(t, "...", depth),
             None => String::new(),
         }
     )
@@ -82,7 +82,7 @@ fn get_array_multiliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -
     format!(
         "{rep}{}",
         match exp.spread {
-            Some(t) => format!("\n{}{}", get_lead(depth), get_token(t, "...")),
+            Some(t) => format!("\n{}{}", get_lead(depth), get_token(t, "...", depth)),
             None => String::new(),
         }
     )

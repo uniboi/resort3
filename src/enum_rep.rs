@@ -6,17 +6,17 @@ pub fn get_enum_rep(p: &EnumDefinitionStatement, depth: usize) -> String {
     let lead = get_lead(depth);
     format!(
         "{} {}\n{}{}\n{}\n{}{}",
-        get_token(p.enum_, "enum"),
+        get_token(p.enum_, "enum", depth),
         p.name.value,
         lead,
-        get_token(p.open, "{"),
+        get_token(p.open, "{", depth),
         p.entries
             .iter()
             .map(|entry| get_enum_entry_rep(entry, depth + 1))
             .collect::<Vec<_>>()
             .join(",\n"),
         lead,
-        get_token(p.close, "}"),
+        get_token(p.close, "}", depth),
     )
 }
 

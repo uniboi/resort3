@@ -1,6 +1,6 @@
 use crate::{get_expression_rep, tokens::get_token};
 
-pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression) -> String {
+pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression, depth: usize) -> String {
     get_token(
         exp.token,
         &match &exp.literal {
@@ -23,6 +23,7 @@ pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression) -> String {
             }
             sqparse::token::LiteralToken::String(s) => get_string_rep(s),
         },
+        depth,
     )
 }
 
@@ -60,12 +61,12 @@ pub fn get_vector_rep(exp: &sqparse::ast::VectorExpression, depth: usize) -> Str
     let padding = " "; // TODO: read from config
     format!(
         "{}{padding}{}{} {}{} {}{padding}{}",
-        get_token(exp.open, "<"),
+        get_token(exp.open, "<", depth),
         get_expression_rep(&exp.x, depth),
-        get_token(exp.comma_1, ","),
+        get_token(exp.comma_1, ",", depth),
         get_expression_rep(&exp.y, depth),
-        get_token(exp.comma_2, ","),
+        get_token(exp.comma_2, ",", depth),
         get_expression_rep(&exp.z, depth),
-        get_token(exp.close, ">"),
+        get_token(exp.close, ">", depth),
     )
 }

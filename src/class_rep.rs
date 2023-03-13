@@ -7,7 +7,7 @@ use crate::{get_expression_rep, table_rep::get_slot_rep, tokens::get_token, util
 pub fn get_class_expression_rep(p: &ClassExpression, depth: usize) -> String {
     format!(
         "{} {}",
-        get_token(p.class, "class"),
+        get_token(p.class, "class", depth),
         get_class_def_rep(&p.definition, depth)
     )
 }
@@ -15,7 +15,7 @@ pub fn get_class_expression_rep(p: &ClassExpression, depth: usize) -> String {
 pub fn get_class_statement_rep(p: &ClassDefinitionStatement, depth: usize) -> String {
     format!(
         "{} {} {}",
-        get_token(p.class, "class"),
+        get_token(p.class, "class", depth),
         get_expression_rep(&*p.name, depth),
         get_class_def_rep(&p.definition, depth)
     )
@@ -29,9 +29,9 @@ fn get_class_def_rep(def: &ClassDefinition, depth: usize) -> String {
             Some(ext) => get_class_extend_rep(ext, depth),
             None => String::new(),
         },
-        get_token(def.open, "}"),
+        get_token(def.open, "}", depth),
         get_class_members_rep(&def.members, depth + 1),
-        get_token(def.close, "}")
+        get_token(def.close, "}", depth)
     )
 }
 
@@ -45,7 +45,7 @@ fn get_class_members_rep(members: &Vec<ClassMember>, depth: usize) -> String {
             .map(|member| format!(
                 "{lead}{}{}\n",
                 match &member.static_ {
-                    Some(token) => format!("{} ", get_token(token, "static")),
+                    Some(token) => format!("{} ", get_token(token, "static", depth)),
                     None => String::new(),
                 },
                 get_slot_rep(&member.slot, depth)
@@ -57,7 +57,7 @@ fn get_class_members_rep(members: &Vec<ClassMember>, depth: usize) -> String {
 fn get_class_extend_rep(ext: &ClassExtends, depth: usize) -> String {
     format!(
         "{} {}",
-        get_token(ext.extends, "extends"),
+        get_token(ext.extends, "extends", depth),
         get_expression_rep(&*ext.name, depth)
     )
 }

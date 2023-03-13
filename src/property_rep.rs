@@ -4,14 +4,14 @@ pub fn get_property_rep(exp: &sqparse::ast::PropertyExpression, depth: usize) ->
     format!(
         "{}{}{}",
         get_expression_rep(&*exp.base, depth),
-        get_token(exp.dot, "."),
-        get_method_identifier_rep(&exp.property)
+        get_token(exp.dot, ".", depth),
+        get_method_identifier_rep(&exp.property, depth)
     )
 }
 
-fn get_method_identifier_rep(exp: &sqparse::ast::MethodIdentifier) -> String {
+fn get_method_identifier_rep(exp: &sqparse::ast::MethodIdentifier, depth: usize) -> String {
     match exp {
         sqparse::ast::MethodIdentifier::Identifier(exp) => String::from(exp.value),
-        sqparse::ast::MethodIdentifier::Constructor(token) => get_token(token, "constructor"),
+        sqparse::ast::MethodIdentifier::Constructor(token) => get_token(token, "constructor", depth),
     }
 }

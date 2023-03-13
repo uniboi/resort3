@@ -1,6 +1,9 @@
 use sqparse::ast::{Type, TypeDefinitionStatement};
 
-use crate::{get_expression_rep, struct_rep::get_anon_struct_definition_rep, tokens::get_token};
+use crate::{
+    get_expression_rep, struct_rep::get_anon_struct_definition_rep, tokens::get_token,
+    var_rep::get_var_initializer_rep,
+};
 
 pub fn get_type_rep(ty: &Option<Type>, depth: usize) -> String {
     match ty {
@@ -11,15 +14,15 @@ pub fn get_type_rep(ty: &Option<Type>, depth: usize) -> String {
 
 pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
     match &ty {
-        Type::Local(t) => get_token(t.local, "local"),
-        Type::Var(t) => get_token(t.var, "var"),
-        Type::Plain(t) => get_token(t.name.token, t.name.value),
+        Type::Local(t) => get_token(t.local, "local", depth),
+        Type::Var(t) => get_token(t.var, "var", depth),
+        Type::Plain(t) => get_token(t.name.token, t.name.value, depth),
         Type::Array(t) => format!(
             "{}{}{}{}",
             get_typed_type_rep(&*t.base, depth),
-            get_token(t.open, "["),
+            get_token(t.open, "[", depth),
             get_expression_rep(&t.len, depth),
-            get_token(t.close, "]")
+            get_token(t.close, "]", depth)
         ),
         Type::Generic(p) => get_generic_type_rep(p, depth),
         Type::FunctionRef(p) => get_functionref_type_rep(p, depth),
@@ -27,12 +30,12 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
         Type::Reference(t) => format!(
             "{}{}",
             get_typed_type_rep(&*t.base, depth),
-            get_token(t.reference, "&")
+            get_token(t.reference, "&", depth)
         ),
         Type::Nullable(t) => format!(
             "{} {}",
             get_typed_type_rep(&*t.base, depth),
-            get_token(t.ornull, "ornull")
+            get_token(t.ornull, "ornull", depth)
         ),
     }
 }
@@ -43,9 +46,9 @@ fn get_functionref_type_rep(f: &sqparse::ast::FunctionRefType, depth: usize) -> 
     format!(
         "{} {}{}{padding}{args_rep}{padding}{}",
         get_boxed_type_rep(&f.return_type, depth),
-        get_token(f.functionref, "functionref"),
-        get_token(f.open, "("),
-        get_token(f.close, ")"),
+        get_token(f.functionref, "functionref", depth),
+        get_token(f.open, "(", depth),
+        get_token(f.close, ")", depth),
     )
 }
 
@@ -70,7 +73,7 @@ fn get_functionref_args_rep(
                     .map(|(arg, comma)| format!(
                         "{}{} ",
                         get_functionref_arg_rep(&arg, depth),
-                        get_token(comma, ",")
+                        get_token(comma, ",", depth)
                     ))
                     .collect::<String>(),
                 get_functionref_arg_rep(&args.last_item, depth),
@@ -82,11 +85,15 @@ fn get_functionref_args_rep(
 
 fn get_functionref_arg_rep(arg: &sqparse::ast::FunctionRefParam, depth: usize) -> String {
     format!(
-        "{}{}",
+        "{}{}{}",
         get_typed_type_rep(&arg.type_, depth),
         match &arg.name {
             Some(name) => format!(" {}", name.value),
-            None => String::from(""),
+            None => String::new(),
+        },
+        match &arg.initializer {
+            Some(initializer) => get_var_initializer_rep(initializer, depth),
+            None => String::new(),
         }
     )
 }
@@ -94,7 +101,7 @@ fn get_functionref_arg_rep(arg: &sqparse::ast::FunctionRefParam, depth: usize) -
 pub fn get_typedef_rep(def: &TypeDefinitionStatement, depth: usize) -> String {
     format!(
         "{} {} {}",
-        get_token(def.typedef, "typedef"),
+        get_token(def.typedef, "typedef", depth),
         def.name.value,
         get_typed_type_rep(&def.type_, depth)
     )
@@ -104,9 +111,9 @@ fn get_generic_type_rep(ty: &sqparse::ast::GenericType, depth: usize) -> String 
     format!(
         "{}{}{}{}",
         get_typed_type_rep(&*ty.base, depth),
-        get_token(ty.open, "<"),
+        get_token(ty.open, "<", depth),
         get_generic_type_content_rep(&ty.params, depth),
-        get_token(ty.close, ">"),
+        get_token(ty.close, ">", depth),
     )
 }
 

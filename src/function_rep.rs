@@ -19,24 +19,24 @@ pub fn get_function_rep(f: &FunctionExpression, depth: usize) -> String {
     };
     format!(
         "{return_type}{}{}{}{}{}{}{}",
-        get_token(f.function, "function"),
+        get_token(f.function, "function", depth),
         get_environment_rep(&f.definition.environment, depth),
-        get_token(f.definition.open, "("),
+        get_token(f.definition.open, "(", depth),
         get_function_param_rep(&f.definition.params, depth),
-        get_token(f.definition.close, ")"),
+        get_token(f.definition.close, ")", depth),
         match &f.definition.captures {
-            Some(p) => get_capture_rep(p),
+            Some(p) => get_capture_rep(p, depth),
             None => String::new(),
         },
         get_statement_rep(&*f.definition.body, depth)
     )
 }
 
-fn get_capture_rep(capture: &sqparse::ast::FunctionCaptures) -> String {
+fn get_capture_rep(capture: &sqparse::ast::FunctionCaptures, depth: usize) -> String {
     format!(
         " {} {}{}{}",
-        get_token(capture.colon, ":"),
-        get_token(capture.open, "("),
+        get_token(capture.colon, ":", depth),
+        get_token(capture.open, "(", depth),
         match &capture.names {
             Some(idens) => format!(
                 " {}{}{} ",
@@ -51,7 +51,7 @@ fn get_capture_rep(capture: &sqparse::ast::FunctionCaptures) -> String {
             ),
             None => String::new(),
         },
-        get_token(capture.close, ")"),
+        get_token(capture.close, ")", depth),
     )
 }
 
@@ -64,7 +64,7 @@ fn get_function_param_rep(args: &FunctionParams, depth: usize) -> String {
             ),
             None => String::new(),
         },
-        FunctionParams::EmptyVariable { vararg } => get_token(vararg, "..."),
+        FunctionParams::EmptyVariable { vararg } => get_token(vararg, "...", depth),
         FunctionParams::NonEmptyVariable {
             comma,
             vararg,
@@ -72,8 +72,8 @@ fn get_function_param_rep(args: &FunctionParams, depth: usize) -> String {
         } => format!(
             " {}{} {} ",
             get_all_typed_args_rep(&params.items, &params.last_item, depth),
-            get_token(comma, ","),
-            get_token(vararg, "..."),
+            get_token(comma, ",", depth),
+            get_token(vararg, "...", depth),
         ),
     }
 }
@@ -101,7 +101,7 @@ fn get_all_typed_args_rep(
             .map(|(arg, comma)| format!(
                 "{}{} ",
                 get_typed_arg_rep(arg, depth),
-                get_token(comma, ",")
+                get_token(comma, ",", depth)
             ))
             .collect::<String>(),
         get_typed_arg_rep(last_arg, depth)
@@ -112,11 +112,11 @@ pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize
     format!(
         "{} {} {}{}{}",
         get_type_rep(&f.return_type, depth),
-        get_token(f.function, "function"),
+        get_token(f.function, "function", depth),
         f.name
             .items
             .iter()
-            .map(|(name, namespace)| format!("{}{}", name.value, get_token(namespace, "::")))
+            .map(|(name, namespace)| format!("{}{}", name.value, get_token(namespace, "::", depth)))
             .collect::<String>(),
         f.name.last_item.value,
         get_function_def_rep(&f.definition, depth)
@@ -127,11 +127,11 @@ pub fn get_function_def_rep(def: &FunctionDefinition, depth: usize) -> String {
     format!(
         "{}{}{}{}{}{}",
         get_environment_rep(&def.environment, depth),
-        get_token(def.open, "("),
+        get_token(def.open, "(", depth),
         get_function_param_rep(&def.params, depth),
-        get_token(def.close, ")"),
+        get_token(def.close, ")", depth),
         match &def.captures {
-            Some(capture) => get_capture_rep(capture),
+            Some(capture) => get_capture_rep(capture, depth),
             None => "".to_owned(),
         },
         get_statement_rep(&def.body, depth)
@@ -142,9 +142,9 @@ fn get_environment_rep(env: &Option<FunctionEnvironment>, depth: usize) -> Strin
     match &env {
         Some(env) => format!(
             "{} {} {}",
-            get_token(env.open, "["),
+            get_token(env.open, "[", depth),
             get_expression_rep(&*env.value, depth),
-            get_token(env.close, "]"),
+            get_token(env.close, "]", depth),
         ),
         None => String::new(),
     }
@@ -154,9 +154,9 @@ pub fn get_call_rep(p: &CallExpression, depth: usize) -> String {
     format!(
         "{}{}{}{}",
         get_expression_rep(&*p.function, depth),
-        get_token(p.open, "("),
+        get_token(p.open, "(", depth),
         get_call_params_rep(&p.arguments, depth),
-        get_token(p.close, ")"),
+        get_token(p.close, ")", depth),
     )
 }
 
@@ -172,7 +172,7 @@ fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
                     "{}{}",
                     get_expression_rep(&*arg.value, depth),
                     match &arg.comma {
-                        Some(token) => get_token(token, ", "),
+                        Some(token) => get_token(token, ", ", depth),
                         None => String::new(),
                     }
                 )
@@ -194,7 +194,7 @@ pub fn get_fragmented_named_function_rep(
             Some(ty) => get_typed_type_rep(ty, depth),
             None => String::new(),
         },
-        get_token(function, "function"),
+        get_token(function, "function", depth),
         name.value,
         get_function_def_rep(definition, depth)
     )

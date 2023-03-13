@@ -84,8 +84,8 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::Switch(p) => get_switch_rep(p, depth),
         StatementType::For(p) => get_for_rep(p, depth),
         StatementType::Foreach(p) => get_foreach_rep(p, depth),
-        StatementType::Break(p) => get_token(p.break_, "break"),
-        StatementType::Continue(p) => get_token(p.continue_, "continue"),
+        StatementType::Break(p) => get_token(p.break_, "break", depth),
+        StatementType::Continue(p) => get_token(p.continue_, "continue", depth),
         StatementType::Return(p) => get_return_rep(p, depth),
         StatementType::Yield(p) => get_yield_rep(p, depth),
         StatementType::VarDefinition(p) => get_var_definition_list_rep(p, depth),
@@ -99,31 +99,32 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::Expression(p) => get_expression_rep(&*p.value, depth),
         StatementType::Thread(p) => format!(
             "{} {}",
-            get_token(p.thread, "thread"),
+            get_token(p.thread, "thread", depth),
             get_expression_rep(&*p.value, depth)
         ),
         StatementType::DelayThread(p) => get_delaythread_rep(p, depth),
-        StatementType::WaitThread(p) => get_token(p.wait_thread, "waitthread"),
-        StatementType::WaitThreadSolo(p) => get_token(p.wait_thread_solo, "waitthreadsolo"),
+        StatementType::WaitThread(p) => get_token(p.wait_thread, "waitthread", depth),
+        StatementType::WaitThreadSolo(p) => get_token(p.wait_thread_solo, "waitthreadsolo", depth),
         StatementType::Wait(p) => format!(
             "{} {}",
-            get_token(p.wait, "wait"),
+            get_token(p.wait, "wait", depth),
             get_expression_rep(&*p.value, depth)
         ),
         StatementType::StructDefinition(p) => get_struct_definition_rep(p, depth),
         StatementType::TypeDefinition(p) => get_typedef_rep(p, depth),
         StatementType::Global(p) => get_global_rep(p, depth),
         StatementType::GlobalizeAllFunctions(p) => {
-            get_token(p.globalize_all_functions, "globalize_all_functions")
+            get_token(p.globalize_all_functions, "globalize_all_functions", depth)
         }
-        StatementType::Untyped(p) => get_token(p.untyped, "untyped"),
+        StatementType::Untyped(p) => get_token(p.untyped, "untyped", depth),
         StatementType::Preprocessed(p) => get_preprocessed_if_rep(
             p.as_ref(),
             &|contents, depth| {
                 contents
                     .iter()
                     .map(|c| format!("{}{}", get_lead(depth + 1), get_statement_rep(&c.ty, depth)))
-                    .collect::<String>()
+                    .collect::<Vec<_>>()
+                    .join("\n")
             },
             depth,
         ),
@@ -137,27 +138,27 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
     match expression {
         Expression::Parens(p) => format!(
             "{} {} {}",
-            get_token(p.open, "("),
+            get_token(p.open, "(", depth),
             get_expression_rep(&*p.value, depth),
-            get_token(p.close, ")")
+            get_token(p.close, ")", depth)
         ),
-        Expression::Literal(p) => get_literal_rep(p),
-        Expression::Var(p) => get_token(p.name.token, p.name.value),
+        Expression::Literal(p) => get_literal_rep(p, depth),
+        Expression::Var(p) => get_token(p.name.token, p.name.value, depth),
         Expression::RootVar(p) => format!("::{}", p.name.value),
         Expression::Index(p) => format!(
             "{}{} {} {}",
             get_expression_rep(&*p.base, depth),
-            get_token(p.open, "["),
+            get_token(p.open, "[", depth),
             get_expression_rep(&*p.index, depth),
-            get_token(p.close, "]"),
+            get_token(p.close, "]", depth),
         ),
         Expression::Property(p) => get_property_rep(p, depth),
         Expression::Ternary(p) => format!(
             "{} {} {} {} {}",
             get_expression_rep(&*p.condition, depth),
-            get_token(p.question, "?"),
+            get_token(p.question, "?", depth),
             get_expression_rep(&*p.true_value, depth),
-            get_token(p.separator, ":"),
+            get_token(p.separator, ":", depth),
             get_expression_rep(&*p.false_value, depth)
         ),
         Expression::Binary(p) => get_binary_rep(p, depth),
@@ -171,7 +172,7 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
                 .map(|(value, comma)| format!(
                     "{}{} ",
                     get_expression_rep(value, depth),
-                    get_token(comma, ",")
+                    get_token(comma, ",", depth)
                 ))
                 .collect::<String>(),
             get_expression_rep(&*p.values.last_item, depth)
@@ -183,9 +184,9 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
         Expression::Call(p) => get_call_rep(p, depth),
         Expression::Delegate(p) => format!(
             "{} {} {} {}",
-            get_token(p.delegate, "delegate"),
+            get_token(p.delegate, "delegate", depth),
             get_expression_rep(&*p.parent, depth),
-            get_token(p.colon, ":"),
+            get_token(p.colon, ":", depth),
             get_expression_rep(&*p.value, depth)
         ),
         Expression::Vector(p) => get_vector_rep(p, depth),
@@ -193,11 +194,11 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
             let padding = " "; // TODO: read from config
             format!(
                 "{} {}{}{padding}{}{padding}{}",
-                get_token(p.expect, "expect"),
+                get_token(p.expect, "expect", depth),
                 get_typed_type_rep(&p.ty, depth),
-                get_token(p.open, "("),
+                get_token(p.open, "(", depth),
                 get_expression_rep(&*p.value, depth),
-                get_token(p.close, ")"),
+                get_token(p.close, ")", depth),
             )
         }
         Expression::Lambda(_) => todo!(),

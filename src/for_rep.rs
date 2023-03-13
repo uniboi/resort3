@@ -7,8 +7,8 @@ use crate::{
 pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
     format!(
         "{}{} {}{} {}{} {} {}{}",
-        get_token(stm.for_, "for"),
-        get_token(stm.open, "("),
+        get_token(stm.for_, "for", depth),
+        get_token(stm.open, "(", depth),
         match &stm.initializer {
             Some(initializer) => match initializer {
                 sqparse::ast::ForDefinition::Expression(initializer) =>
@@ -18,17 +18,17 @@ pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
             },
             None => String::new(),
         },
-        get_token(stm.semicolon_1, ";"),
+        get_token(stm.semicolon_1, ";", depth),
         match &stm.condition {
             Some(condition) => get_expression_rep(condition, depth),
             None => String::new(),
         },
-        get_token(stm.semicolon_2, ";"),
+        get_token(stm.semicolon_2, ";", depth),
         match &stm.increment {
             Some(increment) => get_expression_rep(increment, depth),
             None => String::new(),
         },
-        get_token(stm.close, ")"),
+        get_token(stm.close, ")", depth),
         get_statement_rep(&*stm.body, depth)
     )
 }
