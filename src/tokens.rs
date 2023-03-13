@@ -14,7 +14,7 @@ fn get_post_token_lines(token: &Token, depth: usize) -> String {
         Some(line) => {
             let mut comments = get_comments(&line.comments, depth);
             if comments.len() > 0 {
-                comments = format!(" {comments}");
+                comments = format!(" {comments}\n");
             }
             comments
         }
@@ -71,5 +71,5 @@ fn get_multiline_comment_rep(comment: &str, _depth: usize) -> String {
 fn get_single_comment_rep(comment: &str, _depth: usize) -> String {
 	let mut c = String::from(comment);
     trim_trailing_newline(&mut c);
-    format!("//{c}\n")
+    format!("//{c}")
 }

@@ -3,7 +3,7 @@ use sqparse::token::Token;
 use crate::tokens::get_token;
 
 pub fn get_lead(depth: usize) -> String {
-	"\t".repeat(depth)
+    "\t".repeat(depth)
 }
 
 pub fn get_optional_seperator_rep(sep: &Option<&Token>, depth: usize) -> String {
@@ -16,8 +16,8 @@ pub fn get_optional_seperator_rep(sep: &Option<&Token>, depth: usize) -> String 
 pub fn trim_trailing_newline(s: &mut String) {
     if s.ends_with('\n') {
         s.pop();
-        if s.ends_with('\r') {
-            s.pop();
-        }
+    }
+    if s.ends_with('\r') {
+        s.pop();
     }
 }
