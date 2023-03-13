@@ -1,6 +1,6 @@
 use sqparse::token::{Comment, Token, TokenLine};
 
-use crate::utils::get_lead;
+use crate::utils::{get_lead, trim_trailing_newline};
 
 pub fn get_token(token: &Token, p: &str, depth: usize) -> String {
     let pre_token_lines = get_pre_token_lines(token, depth);
@@ -23,7 +23,7 @@ fn get_post_token_lines(token: &Token, depth: usize) -> String {
 }
 
 fn get_pre_token_lines(token: &Token, depth: usize) -> String {
-	let lead = get_lead(depth);
+    let lead = get_lead(depth);
     format!(
         "{}{}",
         token
@@ -69,5 +69,7 @@ fn get_multiline_comment_rep(comment: &str, _depth: usize) -> String {
 }
 
 fn get_single_comment_rep(comment: &str, _depth: usize) -> String {
-    format!("//{comment}")
+	let mut c = String::from(comment);
+    trim_trailing_newline(&mut c);
+    format!("//{c}\n")
 }

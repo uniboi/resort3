@@ -12,3 +12,12 @@ pub fn get_optional_seperator_rep(sep: &Option<&Token>, depth: usize) -> String 
         None => String::from(","),
     }
 }
+
+pub fn trim_trailing_newline(s: &mut String) {
+    if s.ends_with('\n') {
+        s.pop();
+        if s.ends_with('\r') {
+            s.pop();
+        }
+    }
+}

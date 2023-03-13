@@ -10,6 +10,7 @@ use crate::{
     get_expression_rep, get_statement_rep,
     tokens::get_token,
     type_rep::{get_type_rep, get_typed_type_rep},
+    utils::get_lead,
 };
 
 pub fn get_function_rep(f: &FunctionExpression, depth: usize) -> String {
@@ -164,7 +165,7 @@ fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
     if args.len() == 0 {
         return String::new();
     }
-    format!(
+    let rep = format!(
         " {} ",
         args.iter()
             .map(|arg| {
@@ -178,7 +179,28 @@ fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
                 )
             })
             .collect::<String>()
-    )
+    );
+
+    // call expressions with newlines should be multiline
+    if rep.find("\n") != None {
+        // if true {
+        let lead = get_lead(depth + 1);
+        return format!(
+            "\n{}\n{}",
+            args.iter()
+                .map(|arg| format!(
+                    "{lead}{}{}",
+                    get_expression_rep(&*arg.value, depth + 1),
+                    match &arg.comma {
+                        Some(token) => get_token(token, ",", depth),
+                        None => String::new(),
+                    }
+                ))
+                .collect::<String>(),
+            get_lead(depth)
+        );
+    }
+    return rep;
 }
 
 pub fn get_fragmented_named_function_rep(
