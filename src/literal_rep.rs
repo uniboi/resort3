@@ -8,8 +8,7 @@ pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression, depth: usize) -> S
             sqparse::token::LiteralToken::Char(c) => format!("'{c}'"),
             sqparse::token::LiteralToken::Float(f) => {
                 let start_at_dot = false; // TODO: read from config
-                let rep = format!("{f}");
-
+                let rep = format!("{f}{}", if f.fract() == 0.0 { ".0" } else { "" });
                 if start_at_dot {
                     rep[if &exp.token.range.end - &exp.token.range.start < rep.len() {
                         1

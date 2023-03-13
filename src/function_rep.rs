@@ -183,7 +183,6 @@ fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
 
     // call expressions with newlines should be multiline
     if rep.find("\n") != None {
-        // if true {
         let lead = get_lead(depth + 1);
         return format!(
             "\n{}\n{}",

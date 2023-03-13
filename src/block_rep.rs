@@ -1,6 +1,10 @@
 use sqparse::ast::{BlockStatement, StatementType};
 
-use crate::{get_statement_rep, tokens::get_token, utils::get_lead};
+use crate::{
+    get_statement_rep,
+    tokens::get_token,
+    utils::{get_lead, trim_trailing_newline},
+};
 
 pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
     let inline_pre = get_lead(depth);
@@ -12,10 +16,9 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
         block
             .statements
             .iter()
-            .map(|statement| format!(
-                "{statements_pre}{}",
+            .map(|statement| {
                 get_statement_rep(&statement.ty, depth + 1)
-            ))
+            })
             .collect::<Vec<_>>()
             .join("\n"),
         get_token(block.close, "}", depth),

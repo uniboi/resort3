@@ -49,12 +49,14 @@ use table_rep::get_table_rep;
 use tokens::get_token;
 use try_rep::{get_try_rep, throw_rep};
 use type_rep::{get_typed_type_rep, get_typedef_rep};
-use utils::get_lead;
+use utils::{apply_lead_to_lines, clear_whitespace_lines, get_lead};
 use var_rep::{get_const_rep, get_var_definition_list_rep};
 use while_rep::{get_do_while_rep, get_while_rep};
 use yields_rep::{get_delaythread_rep, get_return_rep, get_yield_rep};
 
 use std::{env, fs};
+
+use crate::utils::trim_trailing_newline;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -70,7 +72,9 @@ fn main() {
 
     // println!("{ast:#?}")
     for statement in ast.statements {
-        println!("{}", get_statement_rep(&statement.ty, 0))
+        let mut stm = get_statement_rep(&statement.ty, 0);
+        trim_trailing_newline(&mut stm);
+        print!("{}\n", stm)
     }
 }
 
@@ -122,7 +126,20 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
             &|contents, depth| {
                 contents
                     .iter()
-                    .map(|c| format!("{}{}", get_lead(depth + 1), get_statement_rep(&c.ty, depth)))
+                    .map(|c| {
+                        let raw = format!(
+                            "{}{}",
+                            get_lead(depth + 1),
+                            get_statement_rep(&c.ty, depth + 1)
+                        );
+						println!("##({:?})", raw);
+                        // if raw.find("\n") != None {
+                        //     clear_whitespace_lines(raw.split("\n"), depth + 1)
+                        // } else {
+                        //     format!("{}", raw)
+                        // }
+						clear_whitespace_lines(raw.split("\n"), depth + 1)
+                    })
                     .collect::<Vec<_>>()
                     .join("\n")
             },

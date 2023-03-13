@@ -1,10 +1,10 @@
-use sqparse::{ast::Preprocessable};
+use sqparse::ast::Preprocessable;
 
 use crate::{
     get_expression_rep,
     preprocessed::get_preprocessed_rep,
     tokens::get_token,
-    utils::{get_lead, get_optional_seperator_rep},
+    utils::{get_lead, get_optional_seperator_rep, trim_trailing_newline},
 };
 
 pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> String {
@@ -49,9 +49,12 @@ fn get_array_oneliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> 
             Preprocessable::PREPROCESSED(_) => panic!(), // this case is sorted out before
             Preprocessable::UNCONDITIONAL(v) => {
                 format!(
-                    "{}{} ",
+                    "{}{}",
                     get_expression_rep(&*v.value, depth),
-                    get_optional_seperator_rep(&v.separator, depth)
+                    match &v.separator {
+                        Some(sep) => get_token(sep, ",", depth),
+                        None => String::new(),
+                    }
                 )
             }
         })
@@ -74,7 +77,13 @@ fn get_array_multiliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -
                 get_preprocessed_rep(&*v, &|v, depth| get_expression_rep(&*v.value, depth), depth)
             }
             Preprocessable::UNCONDITIONAL(v) => {
-                format!("{},", get_expression_rep(&*v.value, depth))
+				let mut comma = get_optional_seperator_rep(&v.separator, depth);
+				trim_trailing_newline(&mut comma);
+                format!(
+                    "{}{}",
+                    get_expression_rep(&*v.value, depth),
+                    comma
+                )
             }
         })
         .collect::<Vec<_>>()
