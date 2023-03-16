@@ -47,10 +47,16 @@ pub fn get_pre_token_lines(token: &Token, depth: usize) -> String {
                 } else {
                     prev_line_empty = false;
                 }
-                rep
+                format!(
+                    "{}{rep}",
+                    if rep.trim().is_empty() {
+                        ""
+                    } else {
+                        &lead
+                    }
+                )
             })
-            .collect::<Vec<_>>()
-            .join(&format!("{lead}")),
+            .collect::<String>(),
         if token.before_lines.len() > 0 {
             lead
         } else {
