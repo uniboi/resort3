@@ -49,7 +49,7 @@ use table_rep::get_table_rep;
 use tokens::get_token;
 use try_rep::{get_try_rep, throw_rep};
 use type_rep::{get_typed_type_rep, get_typedef_rep};
-use utils::{apply_lead_to_lines, clear_whitespace_lines, get_lead};
+use utils::{clear_whitespace_lines, get_lead};
 use var_rep::{get_const_rep, get_var_definition_list_rep};
 use while_rep::{get_do_while_rep, get_while_rep};
 use yields_rep::{get_delaythread_rep, get_return_rep, get_yield_rep};
@@ -132,12 +132,6 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
                             get_lead(depth + 1),
                             get_statement_rep(&c.ty, depth + 1)
                         );
-						// println!("##({:?})", raw);
-                        // if raw.find("\n") != None {
-                        //     clear_whitespace_lines(raw.split("\n"), depth + 1)
-                        // } else {
-                        //     format!("{}", raw)
-                        // }
 						clear_whitespace_lines(raw.split("\n"), depth + 1)
                     })
                     .collect::<Vec<_>>()

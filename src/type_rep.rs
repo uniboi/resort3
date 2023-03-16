@@ -1,14 +1,19 @@
-use sqparse::ast::{Type, TypeDefinitionStatement};
+use sqparse::{
+    ast::{Type, TypeDefinitionStatement},
+    token::Token,
+};
 
 use crate::{
-    get_expression_rep, struct_rep::get_anon_struct_definition_rep, tokens::get_token,
+    get_expression_rep,
+    struct_rep::get_anon_struct_definition_rep,
+    tokens::{get_pre_token_lines, get_token},
     var_rep::get_var_initializer_rep,
 };
 
-pub fn get_type_rep(ty: &Option<Type>, depth: usize) -> String {
+pub fn get_type_rep(ty: &Option<Type>, first_guaranteed_token: &Token, depth: usize) -> String {
     match ty {
         Some(ty) => get_typed_type_rep(ty, depth),
-        None => String::from("var"),
+        None => format!("{}var", get_pre_token_lines(first_guaranteed_token, depth)),
     }
 }
 

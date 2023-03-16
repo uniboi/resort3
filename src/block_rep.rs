@@ -1,15 +1,12 @@
 use sqparse::ast::{BlockStatement, StatementType};
 
-use crate::{
-    get_statement_rep,
-    tokens::get_token,
-    utils::{get_lead, trim_trailing_newline},
-};
+use crate::{get_statement_rep, tokens::get_token, utils::get_lead};
 
 pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
     let inline_pre = get_lead(depth);
     let statements_pre = get_lead(depth + 1);
     let pre = format!("\n{inline_pre}");
+	// TODO: still produces lines containing only whitespace because of pre_lines
     format!(
         "{pre}{}\n{}{pre}{}",
         get_token(block.open, "{", depth),

@@ -9,6 +9,12 @@ pub fn get_token(token: &Token, p: &str, depth: usize) -> String {
     format!("{pre_token_lines}{pre_token_comments}{p}{post_token_lines}")
 }
 
+pub fn get_headless_token(token: &Token, p: &str, depth: usize) -> String {
+    let pre_token_comments = get_pre_token_comments(token, depth);
+    let post_token_lines = get_post_token_lines(token, depth);
+    format!("{pre_token_comments}{p}{post_token_lines}")
+}
+
 fn get_post_token_lines(token: &Token, depth: usize) -> String {
     match &token.new_line {
         Some(line) => {
@@ -22,15 +28,27 @@ fn get_post_token_lines(token: &Token, depth: usize) -> String {
     }
 }
 
-fn get_pre_token_lines(token: &Token, depth: usize) -> String {
+pub fn get_pre_token_lines(token: &Token, depth: usize) -> String {
     let lead = get_lead(depth);
+    let mut prev_line_empty = false;
+    let trim_empty_lines = true; // TODO: read from config
     format!(
         "{}{}",
         token
             .before_lines
             .iter()
-            .map(|line| get_line_rep(line, depth))
-            // .map(|line| "test\n")
+            .map(|line| {
+                let rep = get_line_rep(line, depth);
+                if rep.trim().is_empty() {
+                    if prev_line_empty && trim_empty_lines {
+                        return String::new();
+                    }
+                    prev_line_empty = true;
+                } else {
+                    prev_line_empty = false;
+                }
+                rep
+            })
             .collect::<Vec<_>>()
             .join(&format!("{lead}")),
         if token.before_lines.len() > 0 {
@@ -69,7 +87,7 @@ fn get_multiline_comment_rep(comment: &str, _depth: usize) -> String {
 }
 
 fn get_single_comment_rep(comment: &str, _depth: usize) -> String {
-	let mut c = String::from(comment);
+    let mut c = String::from(comment);
     trim_trailing_newline(&mut c);
     format!("//{c}")
 }

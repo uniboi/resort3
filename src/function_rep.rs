@@ -8,7 +8,7 @@ use sqparse::{
 
 use crate::{
     get_expression_rep, get_statement_rep,
-    tokens::get_token,
+    tokens::{get_headless_token, get_token},
     type_rep::{get_type_rep, get_typed_type_rep},
     utils::get_lead,
 };
@@ -82,8 +82,8 @@ fn get_function_param_rep(args: &FunctionParams, depth: usize) -> String {
 fn get_typed_arg_rep(arg: &FunctionParam, depth: usize) -> String {
     format!(
         "{} {}{}",
-        get_type_rep(&arg.type_, depth),
-        arg.name.value,
+        get_type_rep(&arg.type_, arg.name.token, depth),
+		get_headless_token(arg.name.token, arg.name.value, depth),
         match &arg.initializer {
             Some(init) => format!(" = {}", get_expression_rep(&*init.value, depth)),
             None => String::from(""),
@@ -112,8 +112,8 @@ fn get_all_typed_args_rep(
 pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize) -> String {
     format!(
         "{} {} {}{}{}",
-        get_type_rep(&f.return_type, depth),
-        get_token(f.function, "function", depth),
+        get_type_rep(&f.return_type, f.function, depth),
+        get_headless_token(f.function, "function", depth),
         f.name
             .items
             .iter()
