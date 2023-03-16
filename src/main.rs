@@ -132,7 +132,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
                             get_lead(depth + 1),
                             get_statement_rep(&c.ty, depth + 1)
                         );
-						println!("##({:?})", raw);
+						// println!("##({:?})", raw);
                         // if raw.find("\n") != None {
                         //     clear_whitespace_lines(raw.split("\n"), depth + 1)
                         // } else {

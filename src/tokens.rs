@@ -3,7 +3,8 @@ use sqparse::token::{Comment, Token, TokenLine};
 use crate::utils::{get_lead, trim_trailing_newline};
 
 pub fn get_token(token: &Token, p: &str, depth: usize) -> String {
-    let pre_token_lines = get_pre_token_lines(token, depth);
+    // let pre_token_lines = get_pre_token_lines(token, depth);
+    let pre_token_lines = String::new();
     let pre_token_comments = get_pre_token_comments(token, depth);
     let post_token_lines = get_post_token_lines(token, depth);
     format!("{pre_token_lines}{pre_token_comments}{p}{post_token_lines}")

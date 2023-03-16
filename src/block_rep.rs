@@ -17,7 +17,12 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
             .statements
             .iter()
             .map(|statement| {
-                get_statement_rep(&statement.ty, depth + 1)
+                let rep = get_statement_rep(&statement.ty, depth + 1);
+                if rep.find("//") == Some(0) {
+                    rep
+                } else {
+                    format!("{statements_pre}{rep}")
+                }
             })
             .collect::<Vec<_>>()
             .join("\n"),
