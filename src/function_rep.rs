@@ -58,6 +58,7 @@ fn get_capture_rep(capture: &sqparse::ast::FunctionCaptures, depth: usize) -> St
 }
 
 fn get_function_param_rep(args: &FunctionParams, depth: usize) -> String {
+    let lead = get_lead(depth);
     let inline_rep = match args {
         FunctionParams::NonVariable { params } => match params {
             Some(params) => format!(
@@ -80,36 +81,36 @@ fn get_function_param_rep(args: &FunctionParams, depth: usize) -> String {
     };
 
     if inline_rep.find("\n") != None || rep_includes_single_line_comment(&inline_rep) {
-        return get_multiline_function_params_rep(args, depth);
+        return format!(
+            "{}\n{lead}",
+            get_multiline_function_params_rep(args, depth)
+        );
     }
 
     inline_rep
 }
 
 fn get_multiline_function_params_rep(args: &FunctionParams, depth: usize) -> String {
-    let closing_lead = get_lead(depth);
     let param_lead = get_lead(depth + 1);
-    format!(
-        "{}\n{closing_lead}",
-        match args {
-            FunctionParams::NonVariable { params } => match params {
-                Some(params) => get_multiline_function_params_value_rep(params, depth),
-                None => String::new(),
-            },
-            FunctionParams::EmptyVariable { vararg } =>
-                todo!("only vargs available in multiline function definition"), // There should be no way this can happen
-            FunctionParams::NonEmptyVariable {
-                params,
-                comma,
-                vararg,
-            } => format!(
-                "{}{}\n{param_lead}{}",
-                get_multiline_function_params_value_non_trailing_rep(&params, depth),
-                get_token(comma, ",", depth),
-                get_token(vararg, "...", depth)
-            ),
-        }
-    )
+    match args {
+        FunctionParams::NonVariable { params } => match params {
+            Some(params) => get_multiline_function_params_value_rep(params, depth),
+            None => String::new(),
+        },
+        FunctionParams::EmptyVariable { vararg: _ } => {
+            todo!("only vargs available in multiline function definition")
+        } // There should be no way this can happen
+        FunctionParams::NonEmptyVariable {
+            params,
+            comma,
+            vararg,
+        } => format!(
+            "{}{}\n{param_lead}{}",
+            get_multiline_function_params_value_non_trailing_rep(&params, depth),
+            get_token(comma, ",", depth),
+            get_token(vararg, "...", depth)
+        ),
+    }
 }
 
 fn get_multiline_function_params_value_rep(
@@ -181,7 +182,7 @@ fn get_typed_arg_rep(arg: &FunctionParam, depth: usize) -> String {
         get_type_rep(&arg.type_, arg.name.token, depth),
         get_headless_token(arg.name.token, arg.name.value, depth),
         match &arg.initializer {
-            Some(init) => format!(" = {}", get_expression_rep(&*init.value, depth)),
+            Some(init) => format!(" = {}", get_expression_rep(&*init.value, depth + 1)),
             None => String::from(""),
         }
     )
