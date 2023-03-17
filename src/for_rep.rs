@@ -6,29 +6,42 @@ use crate::{
 };
 
 pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
+    let head_rep = if let (None, None, None) = (&stm.initializer, &stm.condition, &stm.initializer)
+    {
+        format!(
+            " {}{} ",
+            get_token(stm.semicolon_1, ";", depth),
+            get_token(stm.semicolon_2, ";", depth),
+        )
+    } else {
+        format!(
+            " {}{} {}{} {} ",
+            match &stm.initializer {
+                Some(initializer) => match initializer {
+                    sqparse::ast::ForDefinition::Expression(initializer) =>
+                        get_expression_rep(initializer, depth),
+                    sqparse::ast::ForDefinition::Definition(initializer) =>
+                        get_var_definition_list_rep(initializer, depth),
+                },
+                None => String::new(),
+            },
+            get_token(stm.semicolon_1, ";", depth),
+            match &stm.condition {
+                Some(condition) => get_expression_rep(condition, depth),
+                None => String::new(),
+            },
+            get_token(stm.semicolon_2, ";", depth),
+            match &stm.increment {
+                Some(increment) => get_expression_rep(increment, depth),
+                None => String::new(),
+            },
+        )
+    };
+
     format!(
-        "{}{} {}{} {}{} {} {}{}",
+        "{}{}{head_rep}{}{}",
         get_token(stm.for_, "for", depth),
         get_token(stm.open, "(", depth),
-        match &stm.initializer {
-            Some(initializer) => match initializer {
-                sqparse::ast::ForDefinition::Expression(initializer) =>
-                    get_expression_rep(initializer, depth),
-                sqparse::ast::ForDefinition::Definition(initializer) =>
-                    get_var_definition_list_rep(initializer, depth),
-            },
-            None => String::new(),
-        },
-        get_token(stm.semicolon_1, ";", depth),
-        match &stm.condition {
-            Some(condition) => get_expression_rep(condition, depth),
-            None => String::new(),
-        },
-        get_token(stm.semicolon_2, ";", depth),
-        match &stm.increment {
-            Some(increment) => get_expression_rep(increment, depth),
-            None => String::new(),
-        },
         get_token(stm.close, ")", depth),
         match &*stm.body {
             sqparse::ast::StatementType::Block(_) => get_statement_rep(&*stm.body, depth),
