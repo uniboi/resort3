@@ -162,7 +162,7 @@ pub fn get_call_rep(p: &CallExpression, depth: usize) -> String {
 }
 
 fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
-    let max_oneliner_args = 4; // TODO: read from config
+    let max_oneliner_args = 5; // TODO: read from config
 
     if args.len() == 0 {
         return String::new();

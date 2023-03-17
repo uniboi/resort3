@@ -16,18 +16,11 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
         .iter()
         .map(|statement| {
             let rep = get_statement_rep(&statement.ty, depth + 1);
-            let mut lines = rep.split("\n").collect::<Vec<_>>();
+            let lines = rep.split("\n").collect::<Vec<_>>();
             let first_line = lines.get(0);
 
-            // for i in 0..lines.len() {
-			// 	let ll = lines[i];
-			// 	let l = &mut String::from(ll);
-            //     trim_trailing_newline(l);
-			// 	lines[i] = l;
-            // }
-
-            if rep.find("//") == Some(0)
-                || (matches!(first_line, Some(_)) && first_line.unwrap().trim().is_empty())
+            if rep.trim().find("//") == Some(0)
+                || (matches!(lines.get(0), Some(_)) && first_line.unwrap().trim().is_empty())
             {
                 rep
             } else {
