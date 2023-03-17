@@ -37,7 +37,8 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
         if rep_starts_with_comment(&opening) {
             ""
         } else {
-            &pre
+            // &pre
+            ""
         },
         opening,
         lines.join("\n"),
@@ -48,7 +49,9 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
 
 pub fn get_inset_statement_rep(stm: &StatementType, depth: usize) -> String {
     match &stm {
-        StatementType::Block(_) => get_statement_rep(stm, depth),
+        StatementType::Block(_) => {
+            format!("\n{}{}", get_lead(depth), get_statement_rep(stm, depth))
+        }
         _ => format!(
             "\n{}{}",
             get_lead(depth + 1),

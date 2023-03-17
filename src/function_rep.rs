@@ -223,7 +223,7 @@ pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize
 
 pub fn get_function_def_rep(def: &FunctionDefinition, depth: usize) -> String {
     format!(
-        "{}{}{}{}{}{}",
+        "{}{}{}{}{}\n{}{}",
         get_environment_rep(&def.environment, depth),
         get_token(def.open, "(", depth),
         get_function_param_rep(&def.params, depth),
@@ -232,6 +232,7 @@ pub fn get_function_def_rep(def: &FunctionDefinition, depth: usize) -> String {
             Some(capture) => get_capture_rep(capture, depth),
             None => "".to_owned(),
         },
+		get_lead(depth),
         get_statement_rep(&def.body, depth)
     )
 }

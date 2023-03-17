@@ -6,6 +6,7 @@ use crate::{
 };
 
 pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
+    let lead = get_lead(depth);
     format!(
         "{}{} {} {}{}",
         get_token(stm.if_, "if", depth),
@@ -19,11 +20,13 @@ pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
                 else_,
                 else_body,
             } => format!(
-                "{}\n{}{}{}",
+                "\n{lead}{}\n{lead}{}{}",
                 get_if_body_rep(&body.ty, depth), // TODO: comments after semicolons get eaten
-                get_lead(depth),
                 get_token(else_, "else", depth),
-                get_if_body_rep(&*else_body, depth)
+                match &**else_body {
+                    StatementType::If(_) => get_if_body_rep(&*else_body, depth),
+                    _ => format!("\n{lead}{}", get_if_body_rep(&*else_body, depth)),
+                },
             ),
         }
     )
