@@ -1,6 +1,6 @@
 use sqparse::ast::{Statement, SwitchCase, SwitchStatement};
 
-use crate::{get_expression_rep, get_statement_rep, tokens::get_token, utils::get_lead, get_full_statement_rep};
+use crate::{get_expression_rep, get_full_statement_rep, tokens::get_token, utils::get_lead};
 
 pub fn get_switch_rep(stm: &SwitchStatement, depth: usize) -> String {
     let lead = get_lead(depth);

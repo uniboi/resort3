@@ -25,9 +25,16 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
         })
         .collect::<Vec<_>>();
 
+    let opening = get_token(block.open, "{", depth);
+
     format!(
-        "{pre}{}\n{}{pre}{}",
-        get_token(block.open, "{", depth),
+        "{}{}\n{}{pre}{}",
+        if let Some(0) = opening.trim().find("//") {
+            ""
+        } else {
+            &pre
+        },
+        opening,
         lines.join("\n"),
         get_token(block.close, "}", depth),
     )

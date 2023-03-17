@@ -47,7 +47,8 @@ pub fn get_pre_token_lines(token: &Token, depth: usize) -> String {
                 } else {
                     prev_line_empty = false;
                 }
-                format!("{}{rep}", if rep.trim().is_empty() { "" } else { &lead })
+                let final_rep = format!("{}{rep}", if rep.trim().is_empty() { "" } else { &lead });
+                return final_rep;
             })
             .collect::<String>(),
         if token.before_lines.len() > 0 {

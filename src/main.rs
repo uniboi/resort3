@@ -83,7 +83,7 @@ fn get_full_statement_rep(statement: &Statement, depth: usize) -> String {
 
     let semicolon_rep = if force_semicolons { ";" } else { "" };
 
-	// TODO: only append a semicolon for some statement types
+    // TODO: only append a semicolon for some statement types
     format!(
         "{}{}",
         get_statement_rep(&statement.ty, depth),
@@ -143,10 +143,15 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
                 contents
                     .iter()
                     .map(|c| {
+                        let rep = get_full_statement_rep(&c, depth + 1);
                         let raw = format!(
                             "{}{}",
-                            get_lead(depth + 1),
-                            get_full_statement_rep(&c, depth + 1)
+                            if let Some(0) = rep.trim().find("//") {
+                                String::new()
+                            } else {
+                                get_lead(depth + 1)
+                            },
+                            rep
                         );
                         clear_whitespace_lines(raw.split("\n"), depth + 1)
                     })
@@ -229,18 +234,20 @@ fn get_expression_rep(expression: &Expression, depth: usize) -> String {
             )
         }
         Expression::Lambda(_) => todo!(),
-        Expression::Preprocessed(p) => format!(
-            "\n{}{}",
-            get_lead(depth),
-            get_preprocessed_if_rep(
-                &*p,
-                &|content, depth| format!(
-                    "{}{}",
-                    get_lead(depth + 1),
-                    get_expression_rep(content, depth)
-                ),
-                depth,
+        Expression::Preprocessed(p) => {
+            format!(
+                "\n{}{}",
+                get_lead(depth),
+                get_preprocessed_if_rep(
+                    &*p,
+                    &|content, depth| format!(
+                        "{}{}",
+                        get_lead(depth + 1),
+                        get_expression_rep(content, depth + 1)
+                    ),
+                    depth,
+                )
             )
-        ),
+        }
     }
 }
