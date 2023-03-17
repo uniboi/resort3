@@ -59,12 +59,13 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
 }
 
 fn get_multiline_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> String {
-    let prop_inset = get_lead(depth + 1);
+    let lead = get_lead(depth);
+	let prop_inset = get_lead(depth + 1);
     let open = get_token(table.open, "{", depth);
     let close = get_token(table.close, "}", depth);
 
     format!(
-        "{open}{}\n{close}",
+        "{open}{}\n{lead}{close}",
         table
             .slots
             .iter()

@@ -83,7 +83,7 @@ fn get_typed_arg_rep(arg: &FunctionParam, depth: usize) -> String {
     format!(
         "{} {}{}",
         get_type_rep(&arg.type_, arg.name.token, depth),
-		get_headless_token(arg.name.token, arg.name.value, depth),
+        get_headless_token(arg.name.token, arg.name.value, depth),
         match &arg.initializer {
             Some(init) => format!(" = {}", get_expression_rep(&*init.value, depth)),
             None => String::from(""),
@@ -162,6 +162,8 @@ pub fn get_call_rep(p: &CallExpression, depth: usize) -> String {
 }
 
 fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
+    let max_oneliner_args = 4; // TODO: read from config
+
     if args.len() == 0 {
         return String::new();
     }
@@ -182,7 +184,7 @@ fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
     );
 
     // call expressions with newlines should be multiline
-    if rep.find("\n") != None {
+    if args.len() >= max_oneliner_args || rep.find("\n") != None {
         let lead = get_lead(depth + 1);
         return format!(
             "\n{}\n{}",
@@ -195,7 +197,8 @@ fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
                         None => String::new(),
                     }
                 ))
-                .collect::<String>(),
+                .collect::<Vec<_>>()
+                .join("\n"),
             get_lead(depth)
         );
     }
