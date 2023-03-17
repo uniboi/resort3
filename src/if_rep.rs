@@ -20,7 +20,7 @@ pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
                 else_body,
             } => format!(
                 "{}\n{}{}{}",
-                get_if_body_rep(&body.ty, depth),
+                get_if_body_rep(&body.ty, depth), // TODO: comments after semicolons get eaten
                 get_lead(depth),
                 get_token(else_, "else", depth),
                 get_if_body_rep(&*else_body, depth)

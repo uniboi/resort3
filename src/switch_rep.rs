@@ -1,6 +1,6 @@
 use sqparse::ast::{Statement, SwitchCase, SwitchStatement};
 
-use crate::{get_expression_rep, get_statement_rep, tokens::get_token, utils::get_lead};
+use crate::{get_expression_rep, get_statement_rep, tokens::get_token, utils::get_lead, get_full_statement_rep};
 
 pub fn get_switch_rep(stm: &SwitchStatement, depth: usize) -> String {
     let lead = get_lead(depth);
@@ -52,7 +52,7 @@ fn get_case_rep(case: &SwitchCase, depth: usize) -> String {
 
 fn get_case_body_rep(body: &Vec<Statement>, depth: usize) -> String {
     body.iter()
-        .map(|body| get_statement_rep(&body.ty, depth + 1))
+        .map(|body| get_full_statement_rep(&body, depth + 1))
         .collect::<Vec<_>>()
         .join("\n")
 }

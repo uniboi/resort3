@@ -40,7 +40,7 @@ use literal_rep::{get_literal_rep, get_vector_rep};
 use preprocessed::get_preprocessed_if_rep;
 use property_rep::get_property_rep;
 use sqparse::{
-    ast::{Expression, StatementType},
+    ast::{Expression, Statement, StatementType},
     parse, tokenize, Flavor,
 };
 use struct_rep::get_struct_definition_rep;
@@ -72,10 +72,26 @@ fn main() {
 
     // println!("{ast:#?}")
     for statement in ast.statements {
-        let mut stm = get_statement_rep(&statement.ty, 0);
+        let mut stm = get_full_statement_rep(&statement, 0);
         trim_trailing_newline(&mut stm);
         print!("{}\n", stm)
     }
+}
+
+fn get_full_statement_rep(statement: &Statement, depth: usize) -> String {
+    let force_semicolons = false; // TODO: read from config
+
+    let semicolon_rep = if force_semicolons { ";" } else { "" };
+
+	// TODO: only append a semicolon for some statement types
+    format!(
+        "{}{}",
+        get_statement_rep(&statement.ty, depth),
+        match statement.semicolon {
+            Some(semicolon) => get_token(semicolon, semicolon_rep, depth),
+            None => String::from(semicolon_rep),
+        }
+    )
 }
 
 fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
@@ -130,9 +146,9 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
                         let raw = format!(
                             "{}{}",
                             get_lead(depth + 1),
-                            get_statement_rep(&c.ty, depth + 1)
+                            get_full_statement_rep(&c, depth + 1)
                         );
-						clear_whitespace_lines(raw.split("\n"), depth + 1)
+                        clear_whitespace_lines(raw.split("\n"), depth + 1)
                     })
                     .collect::<Vec<_>>()
                     .join("\n")
