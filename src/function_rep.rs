@@ -1,7 +1,8 @@
 use sqparse::{
     ast::{
         CallArgument, CallExpression, FunctionDefinition, FunctionDefinitionStatement,
-        FunctionEnvironment, FunctionExpression, FunctionParam, FunctionParams, Identifier, Type,
+        FunctionEnvironment, FunctionExpression, FunctionParam, FunctionParams, Identifier,
+        SeparatedList1, SeparatedListTrailing1, Type,
     },
     token::Token,
 };
@@ -10,7 +11,7 @@ use crate::{
     get_expression_rep, get_statement_rep,
     tokens::{get_headless_token, get_token},
     type_rep::{get_type_rep, get_typed_type_rep},
-    utils::get_lead,
+    utils::{get_lead, rep_includes_single_line_comment},
 };
 
 pub fn get_function_rep(f: &FunctionExpression, depth: usize) -> String {
@@ -57,7 +58,7 @@ fn get_capture_rep(capture: &sqparse::ast::FunctionCaptures, depth: usize) -> St
 }
 
 fn get_function_param_rep(args: &FunctionParams, depth: usize) -> String {
-    match args {
+    let inline_rep = match args {
         FunctionParams::NonVariable { params } => match params {
             Some(params) => format!(
                 " {} ",
@@ -76,7 +77,102 @@ fn get_function_param_rep(args: &FunctionParams, depth: usize) -> String {
             get_token(comma, ",", depth),
             get_token(vararg, "...", depth),
         ),
+    };
+
+    if inline_rep.find("\n") != None || rep_includes_single_line_comment(&inline_rep) {
+        return get_multiline_function_params_rep(args, depth);
     }
+
+    inline_rep
+}
+
+fn get_multiline_function_params_rep(args: &FunctionParams, depth: usize) -> String {
+    let closing_lead = get_lead(depth);
+    let param_lead = get_lead(depth + 1);
+    format!(
+        "{}\n{closing_lead}",
+        match args {
+            FunctionParams::NonVariable { params } => match params {
+                Some(params) => get_multiline_function_params_value_rep(params, depth),
+                None => String::new(),
+            },
+            FunctionParams::EmptyVariable { vararg } =>
+                todo!("only vargs available in multiline function definition"), // There should be no way this can happen
+            FunctionParams::NonEmptyVariable {
+                params,
+                comma,
+                vararg,
+            } => format!(
+                "{}{}\n{param_lead}{}",
+                get_multiline_function_params_value_non_trailing_rep(&params, depth),
+                get_token(comma, ",", depth),
+                get_token(vararg, "...", depth)
+            ),
+        }
+    )
+}
+
+fn get_multiline_function_params_value_rep(
+    params: &SeparatedListTrailing1<FunctionParam>,
+    depth: usize,
+) -> String {
+    let trailing_comma = false; // TODO: read from config
+
+    let trailing_comma_rep = if trailing_comma { "," } else { "" };
+
+    format!(
+        "{}{}",
+        get_multiline_function_params_value_internal(
+            &params
+                .items
+                .iter()
+                .map(|(param, seperator)| (param, seperator))
+                .collect::<Vec<_>>(),
+            &params.last_item,
+            depth
+        ),
+        match params.trailing {
+            Some(comma) => get_token(comma, trailing_comma_rep, depth),
+            None => String::from(trailing_comma_rep),
+        },
+    )
+}
+
+fn get_multiline_function_params_value_non_trailing_rep(
+    params: &SeparatedList1<FunctionParam>,
+    depth: usize,
+) -> String {
+    get_multiline_function_params_value_internal(
+        &params
+            .items
+            .iter()
+            .map(|(param, seperator)| (param, seperator))
+            .collect::<Vec<_>>(),
+        &params.last_item,
+        depth,
+    )
+}
+
+fn get_multiline_function_params_value_internal(
+    params: &Vec<(&FunctionParam, &&Token)>,
+    last_param: &FunctionParam,
+    depth: usize,
+) -> String {
+    let param_lead = get_lead(depth + 1);
+    format!(
+        "{}\n{param_lead}{}",
+        params
+            .iter()
+            .map(|(param, seperator)| {
+                format!(
+                    "\n{param_lead}{}{}",
+                    get_typed_arg_rep(param, depth),
+                    get_token(seperator, ",", depth)
+                )
+            })
+            .collect::<String>(),
+        get_typed_arg_rep(last_param, depth)
+    )
 }
 
 fn get_typed_arg_rep(arg: &FunctionParam, depth: usize) -> String {
