@@ -1,6 +1,10 @@
 use sqparse::ast::{BlockStatement, StatementType};
 
-use crate::{get_full_statement_rep, get_statement_rep, tokens::get_token, utils::get_lead};
+use crate::{
+    get_full_statement_rep, get_statement_rep,
+    tokens::get_token,
+    utils::{clear_whitespace_lines, get_lead},
+};
 
 pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
     let inline_pre = get_lead(depth);
@@ -27,7 +31,7 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
 
     let opening = get_token(block.open, "{", depth);
 
-    format!(
+    let rep = format!(
         "{}{}\n{}{pre}{}",
         if let Some(0) = opening.trim().find("//") {
             ""
@@ -37,7 +41,8 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
         opening,
         lines.join("\n"),
         get_token(block.close, "}", depth),
-    )
+    );
+    clear_whitespace_lines(rep.split("\n"), depth)
 }
 
 pub fn get_inset_statement_rep(stm: &StatementType, depth: usize) -> String {

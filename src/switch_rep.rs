@@ -29,7 +29,7 @@ fn get_case_rep(case: &SwitchCase, depth: usize) -> String {
             get_token(default, "default", depth),
             get_token(case.colon, ":", depth),
             if case.body.len() > 0 {
-                format!("\n{body_lead}{}", get_case_body_rep(&case.body, depth))
+                format!("\n{}", get_case_body_rep(&case.body, depth + 1))
             } else {
                 String::new()
             }
@@ -41,7 +41,7 @@ fn get_case_rep(case: &SwitchCase, depth: usize) -> String {
                 get_expression_rep(&*value, depth + 1),
                 get_token(case.colon, ":", depth),
                 if case.body.len() > 0 {
-                    format!("\n{body_lead}{}", get_case_body_rep(&case.body, depth))
+                    format!("\n{}", get_case_body_rep(&case.body, depth + 1))
                 } else {
                     String::new()
                 }
@@ -51,8 +51,9 @@ fn get_case_rep(case: &SwitchCase, depth: usize) -> String {
 }
 
 fn get_case_body_rep(body: &Vec<Statement>, depth: usize) -> String {
-    body.iter()
-        .map(|body| get_full_statement_rep(&body, depth + 1))
+    let lead = get_lead(depth);
+	body.iter()
+        .map(|body| format!("{}{}", lead, get_full_statement_rep(&body, depth)))
         .collect::<Vec<_>>()
         .join("\n")
 }
