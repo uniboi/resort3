@@ -4,18 +4,27 @@ use crate::{
     get_expression_rep,
     preprocessed::get_preprocessed_rep,
     tokens::get_token,
-    utils::{get_lead, get_optional_seperator_rep, trim_trailing_newline},
+    utils::{
+        get_lead, get_optional_seperator_rep, rep_includes_single_line_comment,
+        trim_trailing_newline,
+    },
 };
 
 pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> String {
     let padding = " "; // TODO: read from config
     let max_oneliner_items = 5; // TODO: read from config
 
-    let mut oneliner = exp.values.len() <= max_oneliner_items;
+    let oneliner_rep = format!("{padding}{}{padding}", get_array_oneliner_rep(exp, depth));
+
+    let mut oneliner =
+        exp.values.len() <= max_oneliner_items && !rep_includes_single_line_comment(&oneliner_rep);
     for v in &exp.values {
-        if matches!(v, Preprocessable::PREPROCESSED(_)) {
-            oneliner = false;
-            break;
+        match &v {
+            Preprocessable::PREPROCESSED(_) => {
+                oneliner = false;
+                break;
+            }
+            Preprocessable::UNCONDITIONAL(_) => {}
         }
     }
 
@@ -28,7 +37,7 @@ pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> Strin
                 None => String::new(),
             }
         } else if oneliner {
-            format!("{padding}{}{padding}", get_array_oneliner_rep(exp, depth))
+            oneliner_rep
         } else {
             format!(
                 "\n{}{}\n{}",
@@ -77,13 +86,9 @@ fn get_array_multiliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -
                 get_preprocessed_rep(&*v, &|v, depth| get_expression_rep(&*v.value, depth), depth)
             }
             Preprocessable::UNCONDITIONAL(v) => {
-				let mut comma = get_optional_seperator_rep(&v.separator, depth);
-				trim_trailing_newline(&mut comma);
-                format!(
-                    "{}{}",
-                    get_expression_rep(&*v.value, depth),
-                    comma
-                )
+                let mut comma = get_optional_seperator_rep(&v.separator, depth);
+                trim_trailing_newline(&mut comma);
+                format!("{}{}", get_expression_rep(&*v.value, depth), comma)
             }
         })
         .collect::<Vec<_>>()

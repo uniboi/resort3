@@ -80,7 +80,7 @@ fn main() {
 
 fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
     let rep: String = match &statement {
-        StatementType::Empty(_) => String::new(),
+        StatementType::Empty(_) => String::new(), // TODO
         StatementType::Block(p) => get_block_rep(p, depth),
         StatementType::If(p) => get_if_rep(p, depth),
         StatementType::While(p) => get_while_rep(p, depth),

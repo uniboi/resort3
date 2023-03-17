@@ -20,7 +20,7 @@ fn get_post_token_lines(token: &Token, depth: usize) -> String {
         Some(line) => {
             let mut comments = get_comments(&line.comments, depth);
             if comments.len() > 0 {
-                comments = format!(" {comments}\n");
+                comments = format!(" {comments}");
             }
             comments
         }
@@ -47,14 +47,7 @@ pub fn get_pre_token_lines(token: &Token, depth: usize) -> String {
                 } else {
                     prev_line_empty = false;
                 }
-                format!(
-                    "{}{rep}",
-                    if rep.trim().is_empty() {
-                        ""
-                    } else {
-                        &lead
-                    }
-                )
+                format!("{}{rep}", if rep.trim().is_empty() { "" } else { &lead })
             })
             .collect::<String>(),
         if token.before_lines.len() > 0 {
@@ -81,7 +74,7 @@ fn get_comments(comments: &Vec<Comment>, depth: usize) -> String {
         .iter()
         .map(|comment| match comment {
             Comment::MultiLine(c) => get_multiline_comment_rep(c, depth),
-            sqparse::token::Comment::SingleLine(c) => get_single_comment_rep(c, depth),
+            Comment::SingleLine(c) => get_single_comment_rep(c, depth),
             _ => todo!(),
         })
         .collect::<Vec<_>>()

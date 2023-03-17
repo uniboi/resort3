@@ -41,7 +41,7 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
                     Preprocessable::PREPROCESSED(_) =>
                         todo!("inline preprocessed slots not implemented"),
                     Preprocessable::UNCONDITIONAL(slot) => format!(
-                        "{}{}",
+                        "\n{}{}",
                         get_table_pair_rep(slot, depth),
                         match slot.comma {
                             Some(comma) => get_token(comma, ",", depth),
