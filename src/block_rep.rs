@@ -3,7 +3,7 @@ use sqparse::ast::{BlockStatement, StatementType};
 use crate::{
     get_full_statement_rep, get_statement_rep,
     tokens::get_token,
-    utils::{clear_whitespace_lines, get_lead},
+    utils::{clear_whitespace_lines, get_lead, rep_starts_with_comment},
 };
 
 pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
@@ -19,7 +19,8 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
             let lines = rep.split("\n").collect::<Vec<_>>();
             let first_line = lines.get(0);
 
-            if rep.trim().find("//") == Some(0)
+            // if rep.trim().find("//") == Some(0)
+            if rep_starts_with_comment(&rep)
                 || (matches!(lines.get(0), Some(_)) && first_line.unwrap().trim().is_empty())
             {
                 rep
@@ -33,7 +34,7 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
 
     let rep = format!(
         "{}{}\n{}{pre}{}",
-        if let Some(0) = opening.trim().find("//") {
+        if rep_starts_with_comment(&opening) {
             ""
         } else {
             &pre

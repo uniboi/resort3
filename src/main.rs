@@ -56,7 +56,7 @@ use yields_rep::{get_delaythread_rep, get_return_rep, get_yield_rep};
 
 use std::{env, fs};
 
-use crate::utils::trim_trailing_newline;
+use crate::utils::{trim_trailing_newline, rep_starts_with_comment};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -146,7 +146,7 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
                         let rep = get_full_statement_rep(&c, depth + 1);
                         let raw = format!(
                             "{}{}",
-                            if let Some(0) = rep.trim().find("//") {
+                            if rep_starts_with_comment(&rep) {
                                 String::new()
                             } else {
                                 get_lead(depth + 1)
