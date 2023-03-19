@@ -56,7 +56,7 @@ use yields_rep::{get_delaythread_rep, get_return_rep, get_yield_rep};
 
 use std::{env, fs};
 
-use crate::utils::{trim_trailing_newline, rep_starts_with_comment};
+use crate::utils::{rep_starts_with_comment, trim_trailing_newline};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -159,6 +159,15 @@ fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
                     .join("\n")
             },
             depth,
+        ),
+        StatementType::PreprocessedDocumentation(p) => format!(
+            "{}{} \"{}\"{} \"{}\" {}",
+            get_token(p.document, "#document", depth),
+            get_token(p.open, "(", depth),
+            get_token(p.property_token, p.property, depth),
+            get_token(p.seperator, ",", depth),
+            get_token(p.help_text_token, p.help_text, depth),
+            get_token(p.close, ")", depth)
         ),
     };
     format!("{rep}")
