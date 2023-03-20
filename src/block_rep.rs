@@ -1,9 +1,9 @@
 use sqparse::ast::{BlockStatement, StatementType};
 
 use crate::{
-    get_full_statement_rep, get_statement_rep,
+    get_full_statement_rep,
     tokens::get_token,
-    utils::{clear_whitespace_lines, get_lead, rep_starts_with_comment},
+    utils::{clear_whitespace_lines, get_lead, rep_starts_with_comment}, statements::get_statement_rep,
 };
 
 pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {

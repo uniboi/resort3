@@ -1,13 +1,12 @@
 use sqparse::ast::Preprocessable;
 
 use crate::{
-    get_expression_rep,
     preprocessed::get_preprocessed_rep,
     tokens::get_token,
     utils::{
         get_lead, get_optional_seperator_rep, rep_includes_single_line_comment,
         trim_trailing_newline,
-    },
+    }, expressions::get_expression_rep,
 };
 
 pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> String {

@@ -8,10 +8,10 @@ use sqparse::{
 };
 
 use crate::{
-    get_expression_rep, get_statement_rep,
+    get_expression_rep,
     tokens::{get_headless_token, get_token},
     type_rep::{get_type_rep, get_typed_type_rep},
-    utils::{get_lead, rep_includes_single_line_comment},
+    utils::{get_lead, rep_includes_single_line_comment}, statements::get_statement_rep,
 };
 
 pub fn get_function_rep(f: &FunctionExpression, depth: usize) -> String {

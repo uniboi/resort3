@@ -1,15 +1,15 @@
 use sqparse::ast::ForStatement;
 
 use crate::{
-    get_expression_rep, get_statement_rep, tokens::get_token, utils::get_lead,
-    var_rep::get_var_definition_list_rep,
+    get_expression_rep, tokens::get_token, utils::get_lead,
+    var_rep::get_var_definition_list_rep, statements::get_statement_rep,
 };
 
 pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
     let head_rep = if let (None, None, None) = (&stm.initializer, &stm.condition, &stm.initializer)
     {
         format!(
-            " {}{} ",
+            "{}{}",
             get_token(stm.semicolon_1, ";", depth),
             get_token(stm.semicolon_2, ";", depth),
         )
@@ -43,13 +43,16 @@ pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
         get_token(stm.for_, "for", depth),
         get_token(stm.open, "(", depth),
         get_token(stm.close, ")", depth),
-        match &*stm.body {
-            sqparse::ast::StatementType::Block(_) => get_statement_rep(&*stm.body, depth),
-            _ => format!(
-                "\n{}{}",
-                get_lead(depth + 1),
-                get_statement_rep(&*stm.body, depth)
+        format!(
+            "\n{}{}",
+            get_lead(
+                depth
+                    + match &*stm.body {
+                        sqparse::ast::StatementType::Block(_) => 0,
+                        _ => 1,
+                    }
             ),
-        }
+			get_statement_rep(&*stm.body, depth)
+        ),
     )
 }

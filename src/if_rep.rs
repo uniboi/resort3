@@ -1,8 +1,8 @@
 use sqparse::ast::{IfStatement, StatementType};
 
 use crate::{
-    block_rep::get_block_rep, get_expression_rep, get_statement_rep, tokens::get_token,
-    utils::get_lead,
+    block_rep::get_block_rep, get_expression_rep, tokens::get_token,
+    utils::get_lead, statements::get_statement_rep,
 };
 
 pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
