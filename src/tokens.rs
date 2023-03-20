@@ -31,7 +31,7 @@ fn get_post_token_lines(token: &Token, depth: usize) -> String {
 pub fn get_pre_token_lines(token: &Token, depth: usize) -> String {
     let lead = get_lead(depth);
     let mut prev_line_empty = false;
-    let trim_empty_lines = true; // TODO: read from config
+    let trim_empty_lines = true; // TODO: untangle this spaghetti
     format!(
         "{}{}",
         token

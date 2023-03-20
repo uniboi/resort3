@@ -1,4 +1,4 @@
-use crate::{get_expression_rep, tokens::get_token};
+use crate::{get_config, get_expression_rep, tokens::get_token, utils::get_optional_padding};
 
 pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression, depth: usize) -> String {
     get_token(
@@ -7,18 +7,13 @@ pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression, depth: usize) -> S
             sqparse::token::LiteralToken::Int(v, base) => get_integer_rep(exp, v, base),
             sqparse::token::LiteralToken::Char(c) => format!("'{c}'"),
             sqparse::token::LiteralToken::Float(f) => {
-                let start_at_dot = false; // TODO: read from config
                 let rep = format!("{f}{}", if f.fract() == 0.0 { ".0" } else { "" });
-                if start_at_dot {
-                    rep[if &exp.token.range.end - &exp.token.range.start < rep.len() {
-                        1
-                    } else {
-                        0
-                    } as usize..]
-                        .to_owned()
+                if get_config().lock().unwrap().trim_float && f < &1.0 {
+                    rep[1..].to_owned()
                 } else {
                     rep
                 }
+                .to_string()
             }
             sqparse::token::LiteralToken::String(s) => get_string_rep(s),
         },
@@ -57,7 +52,7 @@ fn get_string_rep(exp: &sqparse::token::StringToken) -> String {
 }
 
 pub fn get_vector_rep(exp: &sqparse::ast::VectorExpression, depth: usize) -> String {
-    let padding = " "; // TODO: read from config
+    let padding = get_optional_padding(get_config().lock().unwrap().vector_padding);
     format!(
         "{}{padding}{}{} {}{} {}{padding}{}",
         get_token(exp.open, "<", depth),

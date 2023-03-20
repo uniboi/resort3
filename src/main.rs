@@ -77,3 +77,7 @@ fn load_config<'a>(path: &String) {
 fn get_config<'a>() -> &'a Mutex<Config> {
     unsafe { CONFIG.as_ref().unwrap() }
 }
+
+fn help() {
+	println!("test")
+}

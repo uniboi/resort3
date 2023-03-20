@@ -6,11 +6,11 @@ use crate::{
     preprocessed::get_preprocessed_rep,
     tokens::get_token,
     utils::{apply_lead_to_lines, get_lead, trim_trailing_newline},
-    var_rep::get_var_initializer_rep,
+    var_rep::get_var_initializer_rep, get_config,
 };
 
 pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> String {
-    let max_oneliner_items = 3; // TODO: read from config
+    let max_oneliner_items = get_config().lock().unwrap().table_oneliner_max;
     let mut multiline = table.slots.len() > max_oneliner_items;
 
     let open = get_token(table.open, "{", depth);
@@ -33,7 +33,7 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
         get_multiline_table_rep(table, depth)
     } else {
         let rep = format!(
-            "{open} {} {close}",
+            "{open} {}{close}",
             table
                 .slots
                 .iter()
@@ -41,7 +41,7 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
                     Preprocessable::PREPROCESSED(_) =>
                         todo!("inline preprocessed slots not implemented"),
                     Preprocessable::UNCONDITIONAL(slot) => format!(
-                        "\n{}{}",
+                        "{}{} ",
                         get_table_pair_rep(slot, depth),
                         match slot.comma {
                             Some(comma) => get_token(comma, ",", depth),
@@ -97,7 +97,7 @@ pub fn get_table_pair_rep(s: &TableSlot, depth: usize) -> String {
         sqparse::ast::TableSlotType::Slot(slot) => get_slot_rep(slot, depth),
         sqparse::ast::TableSlotType::JsonProperty {
             name,
-            name_token, // TODO: unused?
+            name_token,
             colon,
             value,
         } => format!(

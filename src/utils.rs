@@ -68,3 +68,11 @@ pub fn rep_starts_with_comment(rep: &String) -> bool {
     let s = rep.trim();
     return matches!(s.find("//"), Some(0)) || matches!(s.find("/*"), Some(0));
 }
+
+pub fn get_optional_padding<'a>(padding: bool) -> &'a str {
+	if padding {
+		" "
+	} else {
+		""
+	}
+}

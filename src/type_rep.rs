@@ -4,9 +4,10 @@ use sqparse::{
 };
 
 use crate::{
-    get_expression_rep,
+    get_config, get_expression_rep,
     struct_rep::get_anon_struct_definition_rep,
     tokens::{get_pre_token_lines, get_token},
+    utils::get_optional_padding,
     var_rep::get_var_initializer_rep,
 };
 
@@ -47,7 +48,9 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
 
 fn get_functionref_type_rep(f: &sqparse::ast::FunctionRefType, depth: usize) -> String {
     let args_rep = get_functionref_args_rep(&f.params, depth);
-    let padding = if args_rep.len() > 0 { " " } else { "" }; // TODO: read from config
+    let padding = get_optional_padding(
+        args_rep.len() > get_config().lock().unwrap().functionref_oneliner_args_max,
+    );
     format!(
         "{} {}{}{padding}{args_rep}{padding}{}",
         get_boxed_type_rep(&f.return_type, depth),
@@ -126,23 +129,30 @@ fn get_generic_type_content_rep(
     types: &sqparse::ast::SeparatedListTrailing1<Type>,
     depth: usize,
 ) -> String {
-    let mut padding = ""; // TODO: Read from config
+    let mut padding = get_optional_padding(get_config().lock().unwrap().non_generic_type_padding);
     let rep = format!(
-        "{}{}{}",
+        "{}{}",
         types
             .items
             .iter()
-            .map(|(t, _)| get_typed_type_rep(t, depth))
-            .collect::<Vec<_>>()
-            .join(", "),
-        if types.items.len() > 0 { ", " } else { "" },
+            .map(|(t, comma)| format!(
+                "{}{} ",
+                get_typed_type_rep(t, depth),
+                get_token(comma, ",", depth)
+            ))
+            .collect::<String>(),
         get_typed_type_rep(&*types.last_item, depth)
     );
+
+    for item in &types.items {
+        if let (Type::Generic(_), _) = item {
+            padding = " ";
+        }
+    }
 
     if matches!(&*types.last_item, Type::Generic(_)) {
         padding = " "; // This is required to compile since right bit shift (>>) will be lexed before any types
     }
 
-    // format!("{padding}{}{padding}", rep)
-    format!(" {rep} ")
+    format!("{padding}{}{padding}", rep)
 }

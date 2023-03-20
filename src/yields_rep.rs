@@ -1,18 +1,10 @@
 use sqparse::ast::{ReturnStatement, YieldStatement};
 
-use crate::{get_config, get_expression_rep, tokens::get_token};
+use crate::{get_config, get_expression_rep, tokens::get_token, utils::get_optional_padding};
 
 pub fn get_delaythread_rep(expr: &sqparse::ast::DelayThreadStatement, depth: usize) -> String {
-    let padding = if get_config().lock().unwrap().delaythread_padding {
-        " "
-    } else {
-        ""
-    };
-    let pre = if get_config().lock().unwrap().delaythread_gap {
-        " "
-    } else {
-        ""
-    };
+    let padding = get_optional_padding(get_config().lock().unwrap().delaythread_padding);
+    let pre = get_optional_padding(get_config().lock().unwrap().delaythread_gap);
 
     format!(
         "{}{pre}{}{padding}{}{padding}{} {}",

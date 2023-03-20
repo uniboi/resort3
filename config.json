@@ -1,5 +1,13 @@
 {
 	"semicolons": false,
 	"delaythread_padding": true,
-	"delaythread_gap": false
+	"delaythread_gap": false,
+	"array_oneliner_max": 5,
+	"array_oneliner_definition_padding": true,
+	"expect_padding": true,
+	"trim_float": false,
+	"vector_padding": true,
+	"functionref_oneliner_args_max": 5,
+	"non_generic_type_padding": false,
+	"table_oneliner_max": 3
 }
