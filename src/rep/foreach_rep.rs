@@ -1,30 +1,41 @@
-use sqparse::ast::{ForeachIndex, ForeachStatement, Identifier, Type};
+use sqparse::ast::{ForeachIndex, ForeachStatement, Identifier, StatementType, Type};
 
-use crate::rep::{
-    block_rep::get_inset_statement_rep, expressions::get_expression_rep, tokens::get_token,
-    type_rep::get_typed_type_rep,
+use crate::{
+    get_config,
+    rep::{
+        block_rep::get_inset_statement_rep, expressions::get_expression_rep,
+        statements::get_statement_rep, tokens::get_token, type_rep::get_typed_type_rep,
+    },
+    utils::get_optional_padding,
 };
 
 pub fn get_foreach_rep(stm: &ForeachStatement, depth: usize) -> String {
+    let gap = get_optional_padding(get_config().lock().unwrap().foreach_gap);
+    let padding = get_optional_padding(get_config().lock().unwrap().foreach_padding);
+    let inline = get_config().lock().unwrap().foreach_inline;
     format!(
-        "{}{}{}{} {} {} {}{}",
+        "{}{gap}{}{padding}{}{} {} {}{padding}{}{}",
         get_token(stm.foreach, "foreach", depth),
         get_token(stm.open, "(", depth),
         match &stm.index {
-            Some(idx) => format!("{},", get_foreach_index_rep(idx, depth)),
+            Some(idx) => format!("{}, ", get_foreach_index_rep(idx, depth)),
             None => String::new(),
         },
         get_foreach_value_rep(&stm.value_type, &stm.value_name, depth),
         get_token(stm.in_, "in", depth),
         get_expression_rep(&*stm.array, depth),
         get_token(stm.close, ")", depth),
-        get_inset_statement_rep(&*stm.body, depth)
+        if !matches!(&*stm.body, StatementType::Block(_)) && inline {
+            format!(" {}", get_statement_rep(&*stm.body, depth))
+        } else {
+            get_inset_statement_rep(&*stm.body, depth)
+        }
     )
 }
 
 fn get_foreach_index_rep(idx: &ForeachIndex, depth: usize) -> String {
     format!(
-        " {}{}",
+        "{}{}",
         match &idx.type_ {
             Some(ty) => format!("{} ", get_typed_type_rep(ty, depth)),
             None => String::new(),
@@ -35,7 +46,7 @@ fn get_foreach_index_rep(idx: &ForeachIndex, depth: usize) -> String {
 
 fn get_foreach_value_rep(ty: &Option<Type>, value: &Identifier, depth: usize) -> String {
     format!(
-        " {}{}",
+        "{}{}",
         match ty {
             Some(ty) => format!("{} ", get_typed_type_rep(ty, depth)),
             None => String::new(),

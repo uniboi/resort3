@@ -16,5 +16,8 @@
 	"for_padding": true,
 	"while_gap": true,
 	"while_padding": true,
-	"if_inline": false
+	"if_inline": false,
+	"foreach_gap": false,
+	"foreach_padding": true,
+	"foreach_inline": true
 }

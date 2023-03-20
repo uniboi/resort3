@@ -43,7 +43,12 @@ pub struct Config {
     pub for_gap: bool,
     /// add padding in the condition
     pub for_padding: bool,
+    /// add a gap between `for` and the condition
+    pub foreach_gap: bool,
+    /// add padding in the condition
+    pub foreach_padding: bool,
     /// add a gap between `while` and the condition
+	pub foreach_inline: bool,
     pub while_gap: bool,
     /// add padding in the condition
     pub while_padding: bool,
