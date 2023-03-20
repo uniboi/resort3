@@ -1,7 +1,8 @@
 use sqparse::ast::{ThrowStatement, TryCatchStatement};
 
 use crate::{
-    block_rep::get_inset_statement_rep, get_expression_rep, tokens::get_token, utils::get_lead,
+    rep::{block_rep::get_inset_statement_rep, expressions::get_expression_rep, tokens::get_token},
+    utils::get_lead,
 };
 
 pub fn throw_rep(p: &ThrowStatement, depth: usize) -> String {

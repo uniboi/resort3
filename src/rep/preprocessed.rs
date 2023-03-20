@@ -3,7 +3,10 @@ use sqparse::ast::{
     PreprocessorIfExpression,
 };
 
-use crate::{get_expression_rep, tokens::get_token, utils::get_lead};
+use crate::{
+    rep::{expressions::get_expression_rep, tokens::get_token},
+    utils::get_lead,
+};
 
 pub fn get_preprocessed_if_rep<T, FnRep: Fn(&T, usize) -> String>(
     p: &PreprocessorIfExpression<T>,

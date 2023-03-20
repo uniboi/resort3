@@ -1,6 +1,9 @@
 use sqparse::ast::{EnumDefinitionStatement, EnumEntry};
 
-use crate::{tokens::get_token, utils::get_lead, var_rep::get_var_initializer_rep};
+use crate::{
+    rep::{tokens::get_token, var_rep::get_var_initializer_rep},
+    utils::get_lead,
+};
 
 pub fn get_enum_rep(p: &EnumDefinitionStatement, depth: usize) -> String {
     let lead = get_lead(depth);

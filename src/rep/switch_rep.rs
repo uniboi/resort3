@@ -1,8 +1,7 @@
 use sqparse::ast::{Statement, SwitchCase, SwitchStatement};
 
 use crate::{
-    get_expression_rep, get_full_statement_rep,
-    tokens::get_token,
+    rep::{expressions::get_expression_rep, statements::get_full_statement_rep, tokens::get_token},
     utils::{get_lead, rep_starts_with_comment},
 };
 

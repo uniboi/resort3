@@ -1,8 +1,11 @@
 use sqparse::ast::ForStatement;
 
 use crate::{
-    get_expression_rep, tokens::get_token, utils::get_lead,
-    var_rep::get_var_definition_list_rep, statements::get_statement_rep,
+    rep::{
+        expressions::get_expression_rep, statements::get_statement_rep, tokens::get_token,
+        var_rep::get_var_definition_list_rep,
+    },
+    utils::get_lead,
 };
 
 pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
@@ -52,7 +55,7 @@ pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
                         _ => 1,
                     }
             ),
-			get_statement_rep(&*stm.body, depth)
+            get_statement_rep(&*stm.body, depth)
         ),
     )
 }

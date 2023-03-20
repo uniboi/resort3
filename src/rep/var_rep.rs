@@ -3,7 +3,9 @@ use sqparse::ast::{
     VarInitializer,
 };
 
-use crate::{get_expression_rep, tokens::get_token, type_rep::get_typed_type_rep};
+use crate::rep::{
+    expressions::get_expression_rep, tokens::get_token, type_rep::get_typed_type_rep,
+};
 
 pub fn get_const_rep(statement: &ConstDefinitionStatement, depth: usize) -> String {
     let type_rep = match &statement.const_type {

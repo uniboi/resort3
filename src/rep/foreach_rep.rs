@@ -1,7 +1,7 @@
 use sqparse::ast::{ForeachIndex, ForeachStatement, Identifier, Type};
 
-use crate::{
-    block_rep::get_inset_statement_rep, get_expression_rep, tokens::get_token,
+use crate::rep::{
+    block_rep::get_inset_statement_rep, expressions::get_expression_rep, tokens::get_token,
     type_rep::get_typed_type_rep,
 };
 

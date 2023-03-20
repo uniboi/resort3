@@ -3,12 +3,12 @@ use sqparse::{
     token::Token,
 };
 
-use crate::{
-    get_config, get_expression_rep,
+use crate::{get_config, rep::var_rep::get_var_initializer_rep, utils::get_optional_padding};
+
+use super::{
+    expressions::get_expression_rep,
     struct_rep::get_anon_struct_definition_rep,
     tokens::{get_pre_token_lines, get_token},
-    utils::get_optional_padding,
-    var_rep::get_var_initializer_rep,
 };
 
 pub fn get_type_rep(ty: &Option<Type>, first_guaranteed_token: &Token, depth: usize) -> String {

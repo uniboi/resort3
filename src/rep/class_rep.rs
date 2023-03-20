@@ -2,7 +2,8 @@ use sqparse::ast::{
     ClassDefinition, ClassDefinitionStatement, ClassExpression, ClassExtends, ClassMember,
 };
 
-use crate::{get_expression_rep, table_rep::get_slot_rep, tokens::get_token, utils::get_lead};
+use crate::{rep::{tokens::get_token, expressions::get_expression_rep, table_rep::get_slot_rep}, utils::get_lead};
+
 
 pub fn get_class_expression_rep(p: &ClassExpression, depth: usize) -> String {
     format!(

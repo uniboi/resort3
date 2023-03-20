@@ -1,40 +1,14 @@
-mod array_rep;
-mod binary_rep;
-mod block_rep;
-mod class_rep;
+mod rep;
 mod config;
-mod constructor_res;
-mod enum_rep;
-mod expressions;
-mod fix_rep;
-mod for_rep;
-mod foreach_rep;
-mod function_rep;
-mod global_rep;
-mod if_rep;
-mod literal_rep;
-mod preprocessed;
-mod property_rep;
-mod statements;
-mod struct_rep;
-mod switch_rep;
-mod table_rep;
-mod tokens;
-mod try_rep;
-mod type_rep;
 mod utils;
-mod var_rep;
-mod while_rep;
-mod yields_rep;
 
-use preprocessed::get_preprocessed_if_rep;
+use config::Config;
 use sqparse::{parse, tokenize, Flavor};
 
 use std::{borrow::BorrowMut, env, fs, sync::Mutex};
 
 use crate::{
-    config::Config, expressions::get_expression_rep, statements::get_full_statement_rep,
-    utils::trim_trailing_newline,
+    utils::trim_trailing_newline, rep::statements::get_full_statement_rep,
 };
 
 use std::sync::Once;

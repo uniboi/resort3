@@ -1,10 +1,9 @@
 use sqparse::ast::Preprocessable;
 
+use crate::rep::preprocessed::get_preprocessed_rep;
 use crate::{
-    expressions::get_expression_rep,
     get_config,
-    preprocessed::get_preprocessed_rep,
-    tokens::get_token,
+    rep::{expressions::get_expression_rep, tokens::get_token},
     utils::{
         get_lead, get_optional_padding, get_optional_seperator_rep,
         rep_includes_single_line_comment, trim_trailing_newline,
@@ -12,7 +11,12 @@ use crate::{
 };
 
 pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> String {
-    let padding = get_optional_padding(get_config().lock().unwrap().array_oneliner_definition_padding);
+    let padding = get_optional_padding(
+        get_config()
+            .lock()
+            .unwrap()
+            .array_oneliner_definition_padding,
+    );
     let max_oneliner_items = get_config().lock().unwrap().array_oneliner_max;
 
     let oneliner_rep = format!("{padding}{}{padding}", get_array_oneliner_rep(exp, depth));

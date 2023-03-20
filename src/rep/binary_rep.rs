@@ -1,6 +1,8 @@
 use sqparse::ast::{BinaryExpression, BinaryOperator};
 
-use crate::{get_expression_rep, tokens::get_token};
+use crate::rep::expressions::get_expression_rep;
+
+use super::tokens::get_token;
 
 pub fn get_binary_rep(p: &BinaryExpression, depth: usize) -> String {
     format!(

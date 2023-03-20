@@ -1,4 +1,6 @@
-use crate::{get_config, get_expression_rep, tokens::get_token, utils::get_optional_padding};
+use crate::{get_config, rep::expressions::get_expression_rep, utils::get_optional_padding};
+
+use super::tokens::get_token;
 
 pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression, depth: usize) -> String {
     get_token(

@@ -8,10 +8,13 @@ use sqparse::{
 };
 
 use crate::{
-    get_expression_rep,
-    tokens::{get_headless_token, get_token},
-    type_rep::{get_type_rep, get_typed_type_rep},
-    utils::{get_lead, rep_includes_single_line_comment}, statements::get_statement_rep,
+    rep::{
+        expressions::get_expression_rep,
+        statements::get_statement_rep,
+        tokens::{get_headless_token, get_token},
+        type_rep::{get_type_rep, get_typed_type_rep},
+    },
+    utils::{get_lead, rep_includes_single_line_comment},
 };
 
 pub fn get_function_rep(f: &FunctionExpression, depth: usize) -> String {
@@ -81,10 +84,7 @@ fn get_function_param_rep(args: &FunctionParams, depth: usize) -> String {
     };
 
     if inline_rep.find("\n") != None || rep_includes_single_line_comment(&inline_rep) {
-        return format!(
-            "{}\n{lead}",
-            get_multiline_function_params_rep(args, depth)
-        );
+        return format!("{}\n{lead}", get_multiline_function_params_rep(args, depth));
     }
 
     inline_rep
@@ -180,7 +180,7 @@ fn get_typed_arg_rep(arg: &FunctionParam, depth: usize) -> String {
     format!(
         "{} {}{}",
         get_type_rep(&arg.type_, arg.name.token, depth),
-        get_headless_token(arg.name.token, arg.name.value, depth),
+        get_headless_token(arg.name.token, arg.name.value, depth), // TODO: idk what I did but this seems wrong
         match &arg.initializer {
             Some(init) => format!(" = {}", get_expression_rep(&*init.value, depth + 1)),
             None => String::from(""),
@@ -232,7 +232,7 @@ pub fn get_function_def_rep(def: &FunctionDefinition, depth: usize) -> String {
             Some(capture) => get_capture_rep(capture, depth),
             None => "".to_owned(),
         },
-		get_lead(depth),
+        get_lead(depth),
         get_statement_rep(&def.body, depth)
     )
 }

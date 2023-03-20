@@ -2,7 +2,7 @@ use std::str::Split;
 
 use sqparse::token::{Comment, Token};
 
-use crate::tokens::get_token;
+use crate::rep::tokens::get_token;
 
 pub fn get_lead(depth: usize) -> String {
     "\t".repeat(depth)

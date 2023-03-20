@@ -1,6 +1,8 @@
 use sqparse::ast::{PostfixExpression, PrefixExpression};
 
-use crate::{get_expression_rep, tokens::get_token};
+use crate::rep::expressions::get_expression_rep;
+
+use super::tokens::get_token;
 
 pub fn get_prefixed_expression_rep(exp: &PrefixExpression, depth: usize) -> String {
     format!(
@@ -18,9 +20,15 @@ fn get_prefix_rep(op: &sqparse::ast::PrefixOperator, depth: usize) -> String {
         sqparse::ast::PrefixOperator::Increment(token) => get_token(token, "++", depth),
         sqparse::ast::PrefixOperator::Decrement(token) => get_token(token, "--", depth),
         // These are keywords that require a space after
-        sqparse::ast::PrefixOperator::Typeof(token) => format!("{} ", get_token(token, "typeof", depth)),
-        sqparse::ast::PrefixOperator::Clone(token) => format!("{} ", get_token(token, "clone", depth)),
-        sqparse::ast::PrefixOperator::Delete(token) => format!("{} ", get_token(token, "delete", depth)),
+        sqparse::ast::PrefixOperator::Typeof(token) => {
+            format!("{} ", get_token(token, "typeof", depth))
+        }
+        sqparse::ast::PrefixOperator::Clone(token) => {
+            format!("{} ", get_token(token, "clone", depth))
+        }
+        sqparse::ast::PrefixOperator::Delete(token) => {
+            format!("{} ", get_token(token, "delete", depth))
+        }
     }
 }
 

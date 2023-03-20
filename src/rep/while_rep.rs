@@ -1,6 +1,9 @@
 use sqparse::ast::{DoWhileStatement, WhileStatement};
 
-use crate::{get_expression_rep, tokens::get_token, get_full_statement_rep, statements::get_statement_rep};
+use crate::{
+    get_full_statement_rep,
+    rep::{expressions::get_expression_rep, statements::get_statement_rep, tokens::get_token},
+};
 
 pub fn get_while_rep(stm: &WhileStatement, depth: usize) -> String {
     format!(

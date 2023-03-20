@@ -3,9 +3,11 @@ use sqparse::ast::{
 };
 
 use crate::{
-    preprocessed::get_preprocessed_rep, tokens::get_token, type_rep::get_typed_type_rep,
-    utils::get_lead, var_rep::get_var_initializer_rep,
+    rep::{tokens::get_token, type_rep::get_typed_type_rep, var_rep::get_var_initializer_rep},
+    utils::get_lead,
 };
+
+use super::preprocessed::get_preprocessed_rep;
 
 pub fn get_struct_definition_rep(p: &StructDefinitionStatement, depth: usize) -> String {
     let lead = get_lead(depth);

@@ -1,12 +1,16 @@
 use sqparse::ast::{Preprocessable, Slot, TableSlot};
 
 use crate::{
-    function_rep::{get_fragmented_named_function_rep, get_function_def_rep},
-    get_expression_rep,
-    preprocessed::get_preprocessed_rep,
-    tokens::get_token,
+    get_config,
+    rep::preprocessed::get_preprocessed_rep,
     utils::{apply_lead_to_lines, get_lead, trim_trailing_newline},
-    var_rep::get_var_initializer_rep, get_config,
+};
+
+use super::{
+    expressions::get_expression_rep,
+    function_rep::{get_fragmented_named_function_rep, get_function_def_rep},
+    tokens::get_token,
+    var_rep::get_var_initializer_rep,
 };
 
 pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> String {
@@ -60,7 +64,7 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
 
 fn get_multiline_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> String {
     let lead = get_lead(depth);
-	let prop_inset = get_lead(depth + 1);
+    let prop_inset = get_lead(depth + 1);
     let open = get_token(table.open, "{", depth);
     let close = get_token(table.close, "}", depth);
 
@@ -75,9 +79,9 @@ fn get_multiline_table_rep(table: &sqparse::ast::TableExpression, depth: usize) 
                     get_preprocessed_rep(p, &get_table_pair_rep, depth + 1)
                 ),
                 Preprocessable::UNCONDITIONAL(slot) => {
-					let mut r = get_table_pair_rep(slot, depth);
-					trim_trailing_newline(&mut r);
-					let rep = apply_lead_to_lines(r.split("\n"), depth + 1);
+                    let mut r = get_table_pair_rep(slot, depth);
+                    trim_trailing_newline(&mut r);
+                    let rep = apply_lead_to_lines(r.split("\n"), depth + 1);
                     format!(
                         "\n{}{}",
                         rep,

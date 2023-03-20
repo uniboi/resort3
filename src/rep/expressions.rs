@@ -1,20 +1,11 @@
 use sqparse::ast::Expression;
 
 use crate::{
-    array_rep::get_array_rep,
-    binary_rep::get_binary_rep,
-    class_rep::get_class_expression_rep,
-    fix_rep::{get_postfixed_expression_rep, get_prefixed_expression_rep},
-    function_rep::{get_call_rep, get_function_rep},
     get_config,
-    literal_rep::{get_literal_rep, get_vector_rep},
-    preprocessed::get_preprocessed_if_rep,
-    property_rep::get_property_rep,
-    table_rep::get_table_rep,
-    tokens::get_token,
-    type_rep::get_typed_type_rep,
-    utils::{get_lead, get_optional_padding},
+    utils::{get_lead, get_optional_padding}, rep::{type_rep::get_typed_type_rep, preprocessed::get_preprocessed_if_rep},
 };
+
+use super::{tokens::get_token, literal_rep::{get_literal_rep, get_vector_rep}, property_rep::get_property_rep, fix_rep::{get_prefixed_expression_rep, get_postfixed_expression_rep}, table_rep::get_table_rep, class_rep::get_class_expression_rep, array_rep::get_array_rep, function_rep::{get_function_rep, get_call_rep}, binary_rep::get_binary_rep};
 
 pub fn get_expression_rep(expression: &Expression, depth: usize) -> String {
     match expression {
