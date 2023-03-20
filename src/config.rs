@@ -32,6 +32,10 @@ pub struct Config {
 	pub if_gap: bool,
 	/// add padding in the condition
 	pub if_padding: bool,
+	/// add a gap between `for` and the condition
+	pub for_gap: bool,
+	/// add padding in the condition
+	pub for_padding: bool,
 }
 
 impl Config {

@@ -11,5 +11,7 @@
 	"non_generic_type_padding": false,
 	"table_oneliner_max": 3,
 	"if_gap": true,
-	"if_padding": true
+	"if_padding": true,
+	"for_gap": true,
+	"for_padding": true
 }

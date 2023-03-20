@@ -1,14 +1,18 @@
 use sqparse::ast::ForStatement;
 
 use crate::{
+    get_config,
     rep::{
         expressions::get_expression_rep, statements::get_statement_rep, tokens::get_token,
         var_rep::get_var_definition_list_rep,
     },
-    utils::get_lead,
+    utils::{get_lead, get_optional_padding},
 };
 
 pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
+	let gap = get_optional_padding(get_config().lock().unwrap().for_gap);
+	let padding = get_optional_padding(get_config().lock().unwrap().for_padding);
+
     let head_rep = if let (None, None, None) = (&stm.initializer, &stm.condition, &stm.initializer)
     {
         format!(
@@ -18,7 +22,7 @@ pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
         )
     } else {
         format!(
-            " {}{} {}{} {} ",
+            "{padding}{}{} {}{} {}{padding}",
             match &stm.initializer {
                 Some(initializer) => match initializer {
                     sqparse::ast::ForDefinition::Expression(initializer) =>
@@ -42,7 +46,7 @@ pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
     };
 
     format!(
-        "{}{}{head_rep}{}{}",
+        "{}{gap}{}{head_rep}{}{}",
         get_token(stm.for_, "for", depth),
         get_token(stm.open, "(", depth),
         get_token(stm.close, ")", depth),
