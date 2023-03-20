@@ -21,5 +21,6 @@
 	"if_inline": true,
 	"foreach_gap": false,
 	"foreach_padding": true,
-	"foreach_inline": true
+	"foreach_inline": true,
+	"for_inline": true
 }
