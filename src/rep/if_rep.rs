@@ -2,15 +2,18 @@ use sqparse::ast::{IfStatement, StatementType};
 
 use crate::{
     rep::{expressions::get_expression_rep, tokens::get_token},
-    utils::get_lead,
+    utils::{get_lead, get_optional_padding}, get_config,
 };
 
 use super::{block_rep::get_block_rep, statements::get_statement_rep};
 
 pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
+	// let config = get_config().lock().unwrap();
+	let gap = get_optional_padding(get_config().lock().unwrap().if_gap);
+	let padding = get_optional_padding(get_config().lock().unwrap().if_padding);
     let lead = get_lead(depth);
     format!(
-        "{}{} {} {}{}",
+        "{}{gap}{}{padding}{}{padding}{}{}",
         get_token(stm.if_, "if", depth),
         get_token(stm.open, "(", depth),
         get_expression_rep(&*stm.condition, depth),

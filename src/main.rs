@@ -1,17 +1,16 @@
-mod rep;
 mod config;
+mod rep;
 mod utils;
+mod cli;
 
+use crate::{rep::statements::get_full_statement_rep, utils::trim_trailing_newline};
 use config::Config;
 use sqparse::{parse, tokenize, Flavor};
-
-use std::{borrow::BorrowMut, env, fs, sync::Mutex};
-
-use crate::{
-    utils::trim_trailing_newline, rep::statements::get_full_statement_rep,
+use std::{
+    borrow::BorrowMut,
+    env, fs,
+    sync::{Mutex, Once},
 };
-
-use std::sync::Once;
 
 static mut CONFIG: Option<Mutex<Config>> = None;
 static INIT: Once = Once::new();
@@ -50,8 +49,4 @@ fn load_config<'a>(path: &String) {
 
 fn get_config<'a>() -> &'a Mutex<Config> {
     unsafe { CONFIG.as_ref().unwrap() }
-}
-
-fn help() {
-	println!("test")
 }

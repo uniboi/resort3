@@ -28,6 +28,10 @@ pub struct Config {
 	pub non_generic_type_padding: bool,
 	/// defines the number of items in a table definition that will be represented in a single line definition
 	pub table_oneliner_max: usize,
+	/// add a gap between `if` and the condition
+	pub if_gap: bool,
+	/// add padding in the condition
+	pub if_padding: bool,
 }
 
 impl Config {

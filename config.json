@@ -9,5 +9,7 @@
 	"vector_padding": true,
 	"functionref_oneliner_args_max": 5,
 	"non_generic_type_padding": false,
-	"table_oneliner_max": 3
+	"table_oneliner_max": 3,
+	"if_gap": true,
+	"if_padding": true
 }
