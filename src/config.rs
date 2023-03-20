@@ -8,7 +8,6 @@ use serde::{Deserialize, Serialize};
 // - single statement inline while
 // - single statement inline do while
 // - single statement inline for
-// - single statement inline foreach
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     /// Add semicolons to statements
@@ -48,7 +47,8 @@ pub struct Config {
     /// add padding in the condition
     pub foreach_padding: bool,
     /// add a gap between `while` and the condition
-	pub foreach_inline: bool,
+    pub foreach_inline: bool,
+    /// add a gap after the while token
     pub while_gap: bool,
     /// add padding in the condition
     pub while_padding: bool,

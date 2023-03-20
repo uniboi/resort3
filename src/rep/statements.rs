@@ -3,7 +3,6 @@ use sqparse::ast::{Statement, StatementType};
 use crate::{
     get_config,
     rep::{
-		preprocessed::get_preprocessed_if_rep,
         block_rep::get_block_rep,
         class_rep::get_class_statement_rep,
         constructor_res::get_constructor_def_rep,
@@ -14,6 +13,7 @@ use crate::{
         function_rep::get_function_definition_rep,
         global_rep::get_global_rep,
         if_rep::get_if_rep,
+        preprocessed::get_preprocessed_if_rep,
         struct_rep::get_struct_definition_rep,
         switch_rep::get_switch_rep,
         tokens::get_token,
@@ -27,11 +27,7 @@ use crate::{
 };
 
 pub fn get_full_statement_rep(statement: &Statement, depth: usize) -> String {
-    get_statement_rep(&statement.ty, depth)
-}
-
-pub fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
-    let mut add_semicolon = match &statement {
+    let mut add_semicolon = match &statement.ty {
         StatementType::Empty(_) => false,
         StatementType::Block(_) => false,
         StatementType::While(_) => false,
@@ -48,6 +44,23 @@ pub fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         _ => true,
     };
 
+    format!(
+        "{}{}",
+        get_statement_rep(&statement.ty, depth),
+        match &statement.semicolon {
+            Some(s) => {
+                if add_semicolon && get_config().lock().unwrap().semicolons {
+                    get_token(s, ";", depth)
+                } else {
+                    get_token(s, "", depth)
+                }
+            }
+            None => String::new(),
+        }
+    )
+}
+
+pub fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
     let rep: String = match &statement {
         StatementType::Empty(_) => todo!(),
         StatementType::Block(p) => get_block_rep(p, depth),
@@ -123,12 +136,5 @@ pub fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
             get_token(p.close, ")", depth)
         ),
     };
-    format!(
-        "{rep}{}",
-        if get_config().lock().unwrap().semicolons && add_semicolon {
-            ";"
-        } else {
-            ""
-        }
-    )
+    rep
 }
