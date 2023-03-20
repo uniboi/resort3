@@ -52,6 +52,9 @@ pub struct Config {
     pub while_gap: bool,
     /// add padding in the condition
     pub while_padding: bool,
+	/// inline single statement
+	pub while_inline: bool,
+	pub do_while_inline: bool,
 }
 
 impl Config {
