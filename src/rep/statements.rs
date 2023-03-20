@@ -27,7 +27,7 @@ use crate::{
 };
 
 pub fn get_full_statement_rep(statement: &Statement, depth: usize) -> String {
-    let mut add_semicolon = match &statement.ty {
+    let mut can_have_semicolon = match &statement.ty {
         StatementType::Empty(_) => false,
         StatementType::Block(_) => false,
         StatementType::While(_) => false,
@@ -49,13 +49,18 @@ pub fn get_full_statement_rep(statement: &Statement, depth: usize) -> String {
         get_statement_rep(&statement.ty, depth),
         match &statement.semicolon {
             Some(s) => {
-                if add_semicolon && get_config().lock().unwrap().semicolons {
+                if get_config().lock().unwrap().semicolons {
                     get_token(s, ";", depth)
                 } else {
                     get_token(s, "", depth)
                 }
             }
-            None => String::new(),
+            None =>
+                if can_have_semicolon && get_config().lock().unwrap().semicolons {
+                    String::from(";")
+                } else {
+                    String::new()
+                },
         }
     )
 }
