@@ -13,5 +13,7 @@
 	"if_gap": true,
 	"if_padding": true,
 	"for_gap": true,
-	"for_padding": true
+	"for_padding": true,
+	"while_gap": true,
+	"while_padding": true
 }

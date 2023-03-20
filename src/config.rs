@@ -4,6 +4,12 @@ use std::io::BufReader;
 
 use serde::{Deserialize, Serialize};
 
+// TODO
+// - single statement inline while
+// - single statement inline do while
+// - single statement inline for
+// - single statement inline foreach
+// - single statement inline if
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     /// Add semicolons to statements
@@ -36,6 +42,10 @@ pub struct Config {
 	pub for_gap: bool,
 	/// add padding in the condition
 	pub for_padding: bool,
+	/// add a gap between `while` and the condition
+	pub while_gap: bool,
+	/// add padding in the condition
+	pub while_padding: bool,
 }
 
 impl Config {
