@@ -1,16 +1,16 @@
 use sqparse::ast::{IfStatement, StatementType};
 
 use crate::{
+    get_config,
     rep::{expressions::get_expression_rep, tokens::get_token},
-    utils::{get_lead, get_optional_padding}, get_config,
+    utils::{get_lead, get_optional_padding},
 };
 
 use super::{block_rep::get_block_rep, statements::get_statement_rep};
 
 pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
-	// let config = get_config().lock().unwrap();
-	let gap = get_optional_padding(get_config().lock().unwrap().if_gap);
-	let padding = get_optional_padding(get_config().lock().unwrap().if_padding);
+    let gap = get_optional_padding(get_config().lock().unwrap().if_gap);
+    let padding = get_optional_padding(get_config().lock().unwrap().if_padding);
     let lead = get_lead(depth);
     format!(
         "{}{gap}{}{padding}{}{padding}{}{}",
@@ -25,12 +25,12 @@ pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
                 else_,
                 else_body,
             } => format!(
-                "\n{lead}{}\n{lead}{}{}",
+                "{}\n{lead}{}{}",
                 get_if_body_rep(&body.ty, depth), // TODO: comments after semicolons get eaten
                 get_token(else_, "else", depth),
                 match &**else_body {
                     StatementType::If(_) => get_if_body_rep(&*else_body, depth),
-                    _ => format!("\n{lead}{}", get_if_body_rep(&*else_body, depth)),
+                    _ => format!("{}", get_if_body_rep(&*else_body, depth)),
                 },
             ),
         }
@@ -40,10 +40,14 @@ pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
 fn get_if_body_rep(stm: &StatementType, depth: usize) -> String {
     match &stm {
         StatementType::If(p) => format!(" {}", get_if_rep(p, depth)),
-        StatementType::Block(p) => get_block_rep(p, depth),
+        StatementType::Block(p) => format!("\n{}{}", get_lead(depth), get_block_rep(p, depth)),
         p => format!(
-            "\n{}{}",
-            get_lead(depth + 1),
+            "{}{}",
+            if get_config().lock().unwrap().if_inline {
+                format!(" ")
+            } else {
+                format!("\n{}", get_lead(depth + 1))
+            },
             get_statement_rep(p, depth + 1)
         ),
     }
