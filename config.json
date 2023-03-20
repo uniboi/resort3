@@ -1,3 +1,5 @@
 {
-	"semicolons": false
+	"semicolons": false,
+	"delaythread_padding": true,
+	"delaythread_gap": false
 }

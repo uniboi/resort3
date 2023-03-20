@@ -7,13 +7,11 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     pub semicolons: bool,
+	pub delaythread_padding: bool,
+	pub delaythread_gap: bool,
 }
 
 impl Config {
-    pub fn new() -> Self {
-        Self { semicolons: false }
-    }
-
     pub fn from_path(path: &String) -> Result<Self, Box<dyn Error>> {
         let file = File::open(path)?;
         let reader = BufReader::new(file);
