@@ -3,8 +3,10 @@ use sqparse::ast::{DoWhileStatement, StatementType, WhileStatement};
 use crate::{
     get_config, get_full_statement_rep,
     rep::{
-        block_rep::get_inset_statement_rep, expressions::get_expression_rep,
-        statements::get_statement_rep, tokens::get_token,
+        block_rep::get_inset_statement_rep,
+        expressions::get_expression_rep,
+        statements::{append_semicolon, get_inline_statement_rep, get_statement_rep},
+        tokens::get_token,
     },
     utils::{get_lead, get_optional_padding},
 };
@@ -23,17 +25,9 @@ pub fn get_while_rep(stm: &WhileStatement, depth: usize) -> String {
         format!(
             "{}",
             match &*stm.body {
-                StatementType::Block(_) => format!(
-                    "\n{}{}",
-                    get_lead(depth),
-                    get_statement_rep(&*stm.body, depth)
-                ),
-                _ =>
-                    if inline {
-                        format!(" {}", get_statement_rep(&*stm.body, depth))
-                    } else {
-                        get_inset_statement_rep(&*stm.body, depth)
-                    },
+                StatementType::Block(_) =>
+                    get_inline_statement_rep(&*stm.body, depth, get_config().while_inline_block),
+                _ => get_inline_statement_rep(&*stm.body, depth, inline),
             }
         )
     )
@@ -47,10 +41,10 @@ pub fn get_do_while_rep(stm: &DoWhileStatement, depth: usize) -> String {
         "{}{}{}{}{padding}{}{padding}{}",
         get_token(stm.do_, "do", depth),
         match &stm.body.ty {
-            StatementType::Block(_) => format!(
-                "\n{}{} ",
-                get_lead(depth),
-                get_full_statement_rep(&*stm.body, depth)
+            StatementType::Block(_) => append_semicolon(
+                &*stm.body,
+                get_inline_statement_rep(&stm.body.ty, depth, get_config().do_while_inline_block),
+                depth
             ),
             _ =>
                 if inline {
