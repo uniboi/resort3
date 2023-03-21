@@ -49,7 +49,7 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
 fn get_functionref_type_rep(f: &sqparse::ast::FunctionRefType, depth: usize) -> String {
     let args_rep = get_functionref_args_rep(&f.params, depth);
     let padding = get_optional_padding(
-        args_rep.len() > get_config().lock().unwrap().functionref_oneliner_args_max,
+        args_rep.len() > get_config().functionref_oneliner_args_max,
     );
     format!(
         "{} {}{}{padding}{args_rep}{padding}{}",
@@ -129,7 +129,7 @@ fn get_generic_type_content_rep(
     types: &sqparse::ast::SeparatedListTrailing1<Type>,
     depth: usize,
 ) -> String {
-    let mut padding = get_optional_padding(get_config().lock().unwrap().non_generic_type_padding);
+    let mut padding = get_optional_padding(get_config().non_generic_type_padding);
     let rep = format!(
         "{}{}",
         types

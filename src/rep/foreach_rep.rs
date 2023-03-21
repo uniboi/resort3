@@ -3,16 +3,19 @@ use sqparse::ast::{ForeachIndex, ForeachStatement, Identifier, StatementType, Ty
 use crate::{
     get_config,
     rep::{
-        block_rep::get_inset_statement_rep, expressions::get_expression_rep,
-        statements::get_statement_rep, tokens::get_token, type_rep::get_typed_type_rep,
+        block_rep::get_inset_statement_rep,
+        expressions::get_expression_rep,
+        statements::{get_inline_statement_rep, get_statement_rep},
+        tokens::get_token,
+        type_rep::get_typed_type_rep,
     },
     utils::get_optional_padding,
 };
 
 pub fn get_foreach_rep(stm: &ForeachStatement, depth: usize) -> String {
-    let gap = get_optional_padding(get_config().lock().unwrap().foreach_gap);
-    let padding = get_optional_padding(get_config().lock().unwrap().foreach_padding);
-    let inline = get_config().lock().unwrap().foreach_inline;
+    let gap = get_optional_padding(get_config().foreach_gap);
+    let padding = get_optional_padding(get_config().foreach_padding);
+    let inline = get_config().foreach_inline;
     format!(
         "{}{gap}{}{padding}{}{} {} {}{padding}{}{}",
         get_token(stm.foreach, "foreach", depth),
@@ -25,11 +28,12 @@ pub fn get_foreach_rep(stm: &ForeachStatement, depth: usize) -> String {
         get_token(stm.in_, "in", depth),
         get_expression_rep(&*stm.array, depth),
         get_token(stm.close, ")", depth),
-        if !matches!(&*stm.body, StatementType::Block(_)) && inline {
-            format!(" {}", get_statement_rep(&*stm.body, depth))
-        } else {
-            get_inset_statement_rep(&*stm.body, depth)
-        }
+        match &*stm.body {
+            StatementType::Block(_) => {
+                get_inline_statement_rep(&*stm.body, depth, get_config().foreach_inline_block)
+            }
+            _ => get_inline_statement_rep(&*stm.body, depth, inline),
+        },
     )
 }
 

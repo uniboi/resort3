@@ -9,8 +9,8 @@ use crate::{
 use super::{block_rep::get_block_rep, statements::get_statement_rep};
 
 pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
-    let gap = get_optional_padding(get_config().lock().unwrap().if_gap);
-    let padding = get_optional_padding(get_config().lock().unwrap().if_padding);
+    let gap = get_optional_padding(get_config().if_gap);
+    let padding = get_optional_padding(get_config().if_padding);
     let lead = get_lead(depth);
     format!(
         "{}{gap}{}{padding}{}{padding}{}{}",
@@ -40,10 +40,14 @@ pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
 fn get_if_body_rep(stm: &StatementType, depth: usize) -> String {
     match &stm {
         StatementType::If(p) => format!(" {}", get_if_rep(p, depth)),
-        StatementType::Block(p) => format!("\n{}{}", get_lead(depth), get_block_rep(p, depth)),
+        StatementType::Block(p) => if get_config().if_inline_block {
+			format!(" {}", get_block_rep(p, depth))
+		} else {
+			format!("\n{}{}", get_lead(depth), get_block_rep(p, depth))
+		},
         p => format!(
             "{}{}",
-            if get_config().lock().unwrap().if_inline {
+            if get_config().if_inline {
                 format!(" ")
             } else {
                 format!("\n{}", get_lead(depth + 1))

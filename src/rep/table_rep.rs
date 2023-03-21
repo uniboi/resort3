@@ -14,7 +14,7 @@ use super::{
 };
 
 pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> String {
-    let max_oneliner_items = get_config().lock().unwrap().table_oneliner_max;
+    let max_oneliner_items = get_config().table_oneliner_max;
     let mut multiline = table.slots.len() > max_oneliner_items;
 
     let open = get_token(table.open, "{", depth);

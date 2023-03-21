@@ -3,7 +3,7 @@ use sqparse::ast::{Statement, StatementType};
 use crate::{
     get_config,
     rep::{
-        block_rep::get_block_rep,
+        block_rep::{get_block_rep, get_inset_statement_rep},
         class_rep::get_class_statement_rep,
         constructor_res::get_constructor_def_rep,
         enum_rep::get_enum_rep,
@@ -25,6 +25,14 @@ use crate::{
     },
     utils::{clear_whitespace_lines, get_lead, rep_starts_with_comment},
 };
+
+pub fn get_inline_statement_rep(stm: &StatementType, depth: usize, inline: bool) -> String {
+    if inline {
+        format!(" {}", get_statement_rep(stm, depth))
+    } else {
+        get_inset_statement_rep(stm, depth)
+    }
+}
 
 pub fn get_full_statement_rep(statement: &Statement, depth: usize) -> String {
     let mut can_have_semicolon = match &statement.ty {
@@ -49,14 +57,14 @@ pub fn get_full_statement_rep(statement: &Statement, depth: usize) -> String {
         get_statement_rep(&statement.ty, depth),
         match &statement.semicolon {
             Some(s) => {
-                if get_config().lock().unwrap().semicolons {
+                if get_config().semicolons {
                     get_token(s, ";", depth)
                 } else {
                     get_token(s, "", depth)
                 }
             }
             None =>
-                if can_have_semicolon && get_config().lock().unwrap().semicolons {
+                if can_have_semicolon && get_config().semicolons {
                     String::from(";")
                 } else {
                     String::new()

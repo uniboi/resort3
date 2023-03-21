@@ -11,13 +11,8 @@ use crate::{
 };
 
 pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> String {
-    let padding = get_optional_padding(
-        get_config()
-            .lock()
-            .unwrap()
-            .array_oneliner_definition_padding,
-    );
-    let max_oneliner_items = get_config().lock().unwrap().array_oneliner_max;
+    let padding = get_optional_padding(get_config().array_oneliner_definition_padding);
+    let max_oneliner_items = get_config().array_oneliner_max;
 
     let oneliner_rep = format!("{padding}{}{padding}", get_array_oneliner_rep(exp, depth));
 

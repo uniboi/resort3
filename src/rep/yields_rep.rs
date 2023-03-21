@@ -7,8 +7,8 @@ use crate::{
 };
 
 pub fn get_delaythread_rep(expr: &sqparse::ast::DelayThreadStatement, depth: usize) -> String {
-    let padding = get_optional_padding(get_config().lock().unwrap().delaythread_padding);
-    let pre = get_optional_padding(get_config().lock().unwrap().delaythread_gap);
+    let padding = get_optional_padding(get_config().delaythread_padding);
+    let pre = get_optional_padding(get_config().delaythread_gap);
 
     format!(
         "{}{pre}{}{padding}{}{padding}{} {}",

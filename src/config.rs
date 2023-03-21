@@ -10,6 +10,7 @@ pub struct ConfigFile {
     pub padding: Option<bool>,
     pub gap: Option<bool>,
     pub inline: Option<bool>,
+    pub inline_block: Option<bool>,
 
     // pool overrides
     pub semicolons: Option<bool>,
@@ -26,16 +27,21 @@ pub struct ConfigFile {
     pub if_gap: Option<bool>,
     pub if_padding: Option<bool>,
     pub if_inline: Option<bool>,
+    pub if_inline_block: Option<bool>,
     pub for_gap: Option<bool>,
     pub for_padding: Option<bool>,
     pub for_inline: Option<bool>,
+    pub for_inline_block: Option<bool>,
     pub foreach_gap: Option<bool>,
     pub foreach_padding: Option<bool>,
     pub foreach_inline: Option<bool>,
+    pub foreach_inline_block: Option<bool>,
     pub while_gap: Option<bool>,
     pub while_padding: Option<bool>,
     pub while_inline: Option<bool>,
+    pub while_inline_block: Option<bool>,
     pub do_while_inline: Option<bool>,
+    pub do_while_inline_block: Option<bool>,
 }
 
 pub struct Config {
@@ -67,26 +73,36 @@ pub struct Config {
     pub if_padding: bool,
     /// inline non block statements
     pub if_inline: bool,
+    /// start the following block in the same line
+    pub if_inline_block: bool,
     /// add a gap between `for` and the condition
     pub for_gap: bool,
     /// add padding in the condition
     pub for_padding: bool,
     /// single inline statement
     pub for_inline: bool,
-    /// add a gap between `for` and the condition
+    /// start the following block in the same line
+    pub for_inline_block: bool,
+    /// add a gap between `foreach` and the condition
     pub foreach_gap: bool,
     /// add padding in the condition
     pub foreach_padding: bool,
     /// add a gap between `while` and the condition
     pub foreach_inline: bool,
+    /// start the following block in the same line
+    pub foreach_inline_block: bool,
     /// add a gap after the while token
     pub while_gap: bool,
     /// add padding in the condition
     pub while_padding: bool,
     /// inline single statement
     pub while_inline: bool,
+    /// start the following block in the same line
+    pub while_inline_block: bool,
     /// inline single statement
     pub do_while_inline: bool,
+    /// start the following block in the same line
+    pub do_while_inline_block: bool,
 }
 
 impl Config {
@@ -106,16 +122,21 @@ impl Config {
             if_gap: true,
             if_padding: true,
             if_inline: false,
+            if_inline_block: false,
             for_gap: true,
             for_padding: true,
             for_inline: false,
+            for_inline_block: false,
             foreach_gap: true,
             foreach_padding: true,
             foreach_inline: false,
+            foreach_inline_block: false,
             while_gap: true,
             while_padding: true,
             while_inline: false,
+            while_inline_block: false,
             do_while_inline: false,
+            do_while_inline_block: false,
         }
     }
 
@@ -184,6 +205,21 @@ impl Config {
             do_while_inline: p
                 .do_while_inline
                 .unwrap_or(p.inline.unwrap_or(default.do_while_inline)),
+            if_inline_block: p
+                .if_inline_block
+                .unwrap_or(p.inline_block.unwrap_or(default.if_inline_block)),
+            for_inline_block: p
+                .for_inline_block
+                .unwrap_or(p.for_inline_block.unwrap_or(default.for_inline_block)),
+            foreach_inline_block: p
+                .foreach_inline_block
+                .unwrap_or(p.inline_block.unwrap_or(default.foreach_inline_block)),
+            while_inline_block: p
+                .while_inline_block
+                .unwrap_or(p.inline_block.unwrap_or(default.while_inline_block)),
+            do_while_inline_block: p
+                .do_while_inline_block
+                .unwrap_or(p.inline_block.unwrap_or(default.do_while_inline_block)),
         })
     }
 }

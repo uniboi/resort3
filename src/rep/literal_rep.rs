@@ -10,7 +10,7 @@ pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression, depth: usize) -> S
             sqparse::token::LiteralToken::Char(c) => format!("'{c}'"),
             sqparse::token::LiteralToken::Float(f) => {
                 let rep = format!("{f}{}", if f.fract() == 0.0 { ".0" } else { "" });
-                if get_config().lock().unwrap().trim_float && f < &1.0 {
+                if get_config().trim_float && f < &1.0 {
                     rep[1..].to_owned()
                 } else {
                     rep
@@ -54,7 +54,7 @@ fn get_string_rep(exp: &sqparse::token::StringToken) -> String {
 }
 
 pub fn get_vector_rep(exp: &sqparse::ast::VectorExpression, depth: usize) -> String {
-    let padding = get_optional_padding(get_config().lock().unwrap().vector_padding);
+    let padding = get_optional_padding(get_config().vector_padding);
     format!(
         "{}{padding}{}{} {}{} {}{padding}{}",
         get_token(exp.open, "<", depth),

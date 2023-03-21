@@ -1,7 +1,7 @@
+mod cli;
 mod config;
 mod rep;
 mod utils;
-mod cli;
 
 use crate::{rep::statements::get_full_statement_rep, utils::trim_trailing_newline};
 use config::Config;
@@ -12,7 +12,7 @@ use std::{
     sync::{Mutex, Once},
 };
 
-static mut CONFIG: Option<Mutex<Config>> = None;
+static mut CONFIG: Option<Config> = None;
 static INIT: Once = Once::new();
 
 fn main() {
@@ -42,11 +42,11 @@ fn main() {
 fn load_config<'a>(path: &String) {
     unsafe {
         INIT.call_once(|| {
-            *CONFIG.borrow_mut() = Some(Mutex::new(Config::from_path(path).unwrap()));
+            CONFIG = Some(Config::from_path(path).unwrap());
         })
-    };
+    }
 }
 
-fn get_config<'a>() -> &'a Mutex<Config> {
+fn get_config<'a>() -> &'a Config {
     unsafe { CONFIG.as_ref().unwrap() }
 }

@@ -10,9 +10,9 @@ use crate::{
 };
 
 pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
-    let gap = get_optional_padding(get_config().lock().unwrap().for_gap);
-    let padding = get_optional_padding(get_config().lock().unwrap().for_padding);
-    let inline = get_config().lock().unwrap().for_inline;
+    let gap = get_optional_padding(get_config().for_gap);
+    let padding = get_optional_padding(get_config().for_padding);
+    let inline = get_config().for_inline;
 
     let head_rep = if let (None, None, None) = (&stm.initializer, &stm.condition, &stm.initializer)
     {
@@ -52,11 +52,16 @@ pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
         get_token(stm.open, "(", depth),
         get_token(stm.close, ")", depth),
         match &*stm.body {
-            sqparse::ast::StatementType::Block(_) => format!(
-                "\n{}{}",
-                get_lead(depth),
-                get_statement_rep(&*stm.body, depth)
-            ),
+            sqparse::ast::StatementType::Block(_) =>
+                if get_config().for_inline_block {
+                    format!(" {}", get_statement_rep(&*stm.body, depth))
+                } else {
+                    format!(
+                        "\n{}{}",
+                        get_lead(depth),
+                        get_statement_rep(&*stm.body, depth)
+                    )
+                },
             _ =>
                 if inline {
                     format!(" {}", get_statement_rep(&*stm.body, depth))

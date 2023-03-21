@@ -64,7 +64,7 @@ pub fn get_expression_rep(expression: &Expression, depth: usize) -> String {
         ),
         Expression::Vector(p) => get_vector_rep(p, depth),
         Expression::Expect(p) => {
-            let padding = get_optional_padding(get_config().lock().unwrap().expect_padding);
+            let padding = get_optional_padding(get_config().expect_padding);
             format!(
                 "{} {}{}{padding}{}{padding}{}",
                 get_token(p.expect, "expect", depth),
