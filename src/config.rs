@@ -1,4 +1,4 @@
-use std::error::Error;
+use std::{error::Error, path::PathBuf};
 use std::fs::File;
 use std::io::BufReader;
 
@@ -142,7 +142,7 @@ impl Config {
         }
     }
 
-    pub fn from_path(path: &String) -> Result<Self, Box<dyn Error>> {
+    pub fn from_path(path: &PathBuf) -> Result<Self, Box<dyn Error>> {
         let file = File::open(path)?;
         let reader = BufReader::new(file);
 
