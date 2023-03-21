@@ -328,6 +328,7 @@ dependencies = [
 [[package]]
 name = "sqparse"
 version = "0.3.0"
+source = "git+https://github.com/uniboi/sqparse?branch=preprocessors#02ac8306eb862ea224dacc470e3d0451af1a4120"
 dependencies = [
  "lazy_static",
  "lexical",
