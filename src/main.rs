@@ -6,11 +6,7 @@ mod utils;
 use crate::{rep::statements::get_full_statement_rep, utils::trim_trailing_newline};
 use config::Config;
 use sqparse::{parse, tokenize, Flavor};
-use std::{
-    borrow::BorrowMut,
-    env, fs,
-    sync::{Mutex, Once},
-};
+use std::{env, fs, sync::Once};
 
 static mut CONFIG: Option<Config> = None;
 static INIT: Once = Once::new();

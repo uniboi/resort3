@@ -43,16 +43,16 @@ fn get_definition_list_rep(list: &SeparatedListTrailing1<VarDefinition>, depth: 
     )
 }
 
-pub fn get_var_definition_rep(statement: &VarDefinition, depth: usize) -> String {
-    format!(
-        "{}{}",
-        statement.name.value,
-        match &statement.initializer {
-            Some(initializer) => get_var_initializer_rep(initializer, depth),
-            None => String::new(),
-        }
-    )
-}
+// pub fn get_var_definition_rep(statement: &VarDefinition, depth: usize) -> String {
+//     format!(
+//         "{}{}",
+//         statement.name.value,
+//         match &statement.initializer {
+//             Some(initializer) => get_var_initializer_rep(initializer, depth),
+//             None => String::new(),
+//         }
+//     )
+// }
 
 pub fn get_var_initializer_rep(statement: &VarInitializer, depth: usize) -> String {
     format!(

@@ -6,6 +6,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct ConfigFile {
+	// general settings
+    pub semicolons: Option<bool>,
+    pub trim_float: Option<bool>,
+
     // pool settings
     pub padding: Option<bool>,
     pub gap: Option<bool>,
@@ -13,13 +17,11 @@ pub struct ConfigFile {
     pub inline_block: Option<bool>,
 
     // pool overrides
-    pub semicolons: Option<bool>,
     pub delaythread_padding: Option<bool>,
     pub delaythread_gap: Option<bool>,
     pub array_oneliner_max: Option<usize>,
     pub array_oneliner_definition_padding: Option<bool>,
     pub expect_padding: Option<bool>,
-    pub trim_float: Option<bool>,
     pub vector_padding: Option<bool>,
     pub functionref_oneliner_args_max: Option<usize>,
     pub non_generic_type_padding: Option<bool>,

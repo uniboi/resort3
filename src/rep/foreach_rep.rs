@@ -3,10 +3,7 @@ use sqparse::ast::{ForeachIndex, ForeachStatement, Identifier, StatementType, Ty
 use crate::{
     get_config,
     rep::{
-        block_rep::get_inset_statement_rep,
-        expressions::get_expression_rep,
-        statements::{get_inline_statement_rep, get_statement_rep},
-        tokens::get_token,
+        expressions::get_expression_rep, statements::get_inline_statement_rep, tokens::get_token,
         type_rep::get_typed_type_rep,
     },
     utils::get_optional_padding,

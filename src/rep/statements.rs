@@ -36,7 +36,7 @@ pub fn get_inline_statement_rep(stm: &StatementType, depth: usize, inline: bool)
 
 pub fn append_semicolon(stm: &Statement, rep: String, depth: usize) -> String {
     // can actually have a semicolon but this is an opinionated formatter so it's not like I care
-    let mut can_have_semicolon = match &stm.ty {
+    let can_have_semicolon = match &stm.ty {
         StatementType::Empty(_) => false,
         StatementType::Block(_) => false,
         StatementType::While(_) => false,
