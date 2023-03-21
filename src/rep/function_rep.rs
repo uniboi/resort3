@@ -2,13 +2,14 @@ use sqparse::{
     ast::{
         CallArgument, CallExpression, FunctionDefinition, FunctionDefinitionStatement,
         FunctionEnvironment, FunctionExpression, FunctionParam, FunctionParams, Identifier,
-        SeparatedList1, SeparatedListTrailing1, Type,
+        SeparatedList1, SeparatedListTrailing1, StatementType, Type,
     },
     token::Token,
 };
 
 use crate::{
     rep::{
+        block_rep::get_empty_block,
         expressions::get_expression_rep,
         statements::get_statement_rep,
         tokens::{get_headless_token, get_token},
@@ -222,8 +223,16 @@ pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize
 }
 
 pub fn get_function_def_rep(def: &FunctionDefinition, depth: usize) -> String {
+    let (empty_body, empty_block) = match &*def.body {
+        StatementType::Block(b) => (b.statements.len() == 0, get_empty_block(&b, depth)),
+        _ => (
+            false,
+            String::from("/* formatting error: expected empty block */"), // bruh moment
+        ),
+    };
+
     format!(
-        "{}{}{}{}{}\n{}{}",
+        "{}{}{}{}{}{}{}",
         get_environment_rep(&def.environment, depth),
         get_token(def.open, "(", depth),
         get_function_param_rep(&def.params, depth),
@@ -233,7 +242,11 @@ pub fn get_function_def_rep(def: &FunctionDefinition, depth: usize) -> String {
             None => "".to_owned(),
         },
         get_lead(depth),
-        get_statement_rep(&def.body, depth)
+        if empty_body {
+            format!(" {empty_block}")
+        } else {
+            format!("\n{}", get_statement_rep(&def.body, depth))
+        }
     )
 }
 

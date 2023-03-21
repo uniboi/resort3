@@ -55,7 +55,7 @@ fn format_directory(path: &PathBuf, mut output: PathBuf) -> Result<(), Error> {
 				let mut location = output.clone();
 				location.pop();
 
-                std::fs::create_dir_all(&location);
+                std::fs::create_dir_all(&location)?;
                 format_file(
                     &entry_path,
                     &output,

@@ -1,8 +1,8 @@
-use sqparse::ast::{BlockStatement, StatementType};
+use sqparse::ast::{BlockStatement, StatementType, Statement};
 
 use crate::{
     get_full_statement_rep,
-    utils::{clear_whitespace_lines, get_lead, rep_starts_with_comment}, rep::statements::get_statement_rep,
+    utils::{clear_whitespace_lines, get_lead, rep_starts_with_comment}, rep::{statements::get_statement_rep, tokens::get_headless_token},
 };
 
 use super::tokens::get_token;
@@ -20,7 +20,6 @@ pub fn get_block_rep(block: &BlockStatement, depth: usize) -> String {
             let lines = rep.split("\n").collect::<Vec<_>>();
             let first_line = lines.get(0);
 
-            // if rep.trim().find("//") == Some(0)
             if rep_starts_with_comment(&rep)
                 || (matches!(lines.get(0), Some(_)) && first_line.unwrap().trim().is_empty())
             {
@@ -59,4 +58,12 @@ pub fn get_inset_statement_rep(stm: &StatementType, depth: usize) -> String {
             get_statement_rep(stm, depth + 1)
         ),
     }
+}
+
+pub fn get_empty_block(b: &BlockStatement, depth: usize) -> String {
+    format!(
+		"{} {}",
+		get_headless_token(b.open, "{", depth),
+		get_headless_token(b.close, "}", depth)
+	)
 }

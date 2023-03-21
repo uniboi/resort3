@@ -1,7 +1,8 @@
 /target
 /test
 /out
+.vscode/launch.json
 out.txt
 out.nut
 test.nut
-.vscode/launch.json
+config.json

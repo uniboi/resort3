@@ -10,9 +10,10 @@ pub fn get_token(token: &Token, p: &str, depth: usize) -> String {
 }
 
 pub fn get_headless_token(token: &Token, p: &str, depth: usize) -> String {
+    let pre_token_lines = get_pre_token_comment_lines(token, depth);
     let pre_token_comments = get_pre_token_comments(token, depth);
     let post_token_lines = get_post_token_lines(token, depth);
-    format!("{pre_token_comments}{p}{post_token_lines}")
+    format!("{pre_token_lines}{pre_token_comments}{p}{post_token_lines}")
 }
 
 fn get_post_token_lines(token: &Token, depth: usize) -> String {
@@ -26,6 +27,28 @@ fn get_post_token_lines(token: &Token, depth: usize) -> String {
         }
         None => String::new(),
     }
+}
+
+pub fn get_pre_token_comment_lines(token: &Token, depth: usize) -> String {
+    let lead = get_lead(depth);
+    let lines = token
+        .before_lines
+        .iter()
+        .filter(|line| line.comments.len() > 0)
+        .collect::<Vec<_>>()
+        .iter()
+        .map(|line| format!("{}{}", get_lead(depth), get_line_rep(line, depth)))
+        .collect::<Vec<_>>();
+    format!(
+        "{}{}",
+        lines.join(""),
+        if lines.len() > 0 {
+            get_lead(depth)
+        } else {
+            String::new()
+        }
+    )
+	// String::new()
 }
 
 pub fn get_pre_token_lines(token: &Token, depth: usize) -> String {
