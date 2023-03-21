@@ -3,7 +3,7 @@ use sqparse::ast::{Preprocessable, Slot, TableSlot};
 use crate::{
     get_config,
     rep::preprocessed::get_preprocessed_rep,
-    utils::{apply_lead_to_lines, get_lead, trim_trailing_newline},
+    utils::{apply_lead_to_lines, get_lead, trim_trailing_newline, rep_includes_single_line_comment},
 };
 
 use super::{
@@ -55,7 +55,7 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
                 })
                 .collect::<String>()
         );
-        if rep.find("\n") != None {
+        if rep.find("\n") != None || rep_includes_single_line_comment(&rep) {
             return get_multiline_table_rep(table, depth);
         }
         return rep;
