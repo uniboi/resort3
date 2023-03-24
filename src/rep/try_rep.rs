@@ -9,7 +9,7 @@ pub fn throw_rep(p: &ThrowStatement, depth: usize) -> String {
     format!(
         "{} {}",
         get_token(p.throw, "throw", depth),
-        get_expression_rep(&*p.value, depth)
+        get_expression_rep(&p.value, depth)
     )
 }
 

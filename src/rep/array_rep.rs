@@ -31,7 +31,7 @@ pub fn get_array_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> Strin
     format!(
         "{}{}{}",
         get_token(exp.open, "[", depth),
-        if exp.values.len() == 0 {
+        if exp.values.is_empty(){
             match &exp.spread {
                 Some(t) => get_token(t, "...", depth),
                 None => String::new(),
@@ -59,7 +59,7 @@ fn get_array_oneliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -> 
             Preprocessable::UNCONDITIONAL(v) => {
                 format!(
                     "{}{}",
-                    get_expression_rep(&*v.value, depth),
+                    get_expression_rep(&v.value, depth),
                     match &v.separator {
                         Some(sep) => get_token(sep, ",", depth),
                         None => String::new(),
@@ -83,12 +83,12 @@ fn get_array_multiliner_rep(exp: &sqparse::ast::ArrayExpression, depth: usize) -
         .iter()
         .map(|v| match v {
             Preprocessable::PREPROCESSED(v) => {
-                get_preprocessed_rep(&*v, &|v, depth| get_expression_rep(&*v.value, depth), depth)
+                get_preprocessed_rep(v, &|v, depth| get_expression_rep(&v.value, depth), depth)
             }
             Preprocessable::UNCONDITIONAL(v) => {
                 let mut comma = get_optional_seperator_rep(&v.separator, depth);
                 trim_trailing_newline(&mut comma);
-                format!("{}{}", get_expression_rep(&*v.value, depth), comma)
+                format!("{}{}", get_expression_rep(&v.value, depth), comma)
             }
         })
         .collect::<Vec<_>>()

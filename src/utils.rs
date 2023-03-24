@@ -39,20 +39,20 @@ pub fn trim_trailing_newline(s: &mut String) {
     }
 }
 
-pub fn rep_includes_single_line_comment(rep: &String) -> bool {
+pub fn rep_includes_single_line_comment(rep: &str) -> bool {
     let comment_index = rep.find("//");
-    if let None = comment_index {
+    if comment_index.is_none() {
         return false;
     }
 
     // TODO: handle // in multiline comments
     let sub = &rep[..comment_index.unwrap()];
-    return sub.matches("\"").count() % 2 != 1; // if the number of quotes before `//` is odd, `//` is included in a string
+    return sub.matches('"').count() % 2 != 1; // if the number of quotes before `//` is odd, `//` is included in a string
 }
 
-pub fn rep_starts_with_comment(rep: &String) -> bool {
+pub fn rep_starts_with_comment(rep: &str) -> bool {
     let s = rep.trim();
-    return matches!(s.find("//"), Some(0)) || matches!(s.find("/*"), Some(0));
+    matches!(s.find("//"), Some(0)) || matches!(s.find("/*"), Some(0))
 }
 
 pub fn get_optional_padding<'a>(padding: bool) -> &'a str {

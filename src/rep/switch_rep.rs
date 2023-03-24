@@ -17,7 +17,7 @@ pub fn get_switch_rep(stm: &SwitchStatement, depth: usize) -> String {
         "{}{} {} {}\n{lead}{}\n{}\n{lead}{}",
         get_token(stm.switch, "switch", depth),
         get_token(stm.open_condition, "(", depth),
-        get_expression_rep(&*stm.condition, depth),
+        get_expression_rep(&stm.condition, depth),
         get_token(stm.close_condition, ")", depth),
         get_token(stm.open_cases, "{", depth),
         cases_rep,
@@ -33,7 +33,7 @@ fn get_case_rep(case: &SwitchCase, depth: usize) -> String {
                 "{}{}{}",
                 get_token(default, "default", depth),
                 get_token(case.colon, ":", depth),
-                if case.body.len() > 0 {
+                if !case.body.is_empty() {
                     format!("\n{}", get_case_body_rep(&case.body, depth + 1))
                 } else {
                     String::new()
@@ -52,9 +52,9 @@ fn get_case_rep(case: &SwitchCase, depth: usize) -> String {
             let rep = format!(
                 "{} {}{}{}",
                 get_token(c, "case", depth),
-                get_expression_rep(&*value, depth + 1),
+                get_expression_rep(value, depth + 1),
                 get_token(case.colon, ":", depth),
-                if case.body.len() > 0 {
+                if !case.body.is_empty() {
                     format!("\n{}", get_case_body_rep(&case.body, depth + 1))
                 } else {
                     String::new()
@@ -72,11 +72,11 @@ fn get_case_rep(case: &SwitchCase, depth: usize) -> String {
     }
 }
 
-fn get_case_body_rep(body: &Vec<Statement>, depth: usize) -> String {
+fn get_case_body_rep(body: &[Statement], depth: usize) -> String {
     let lead = get_lead(depth);
     body.iter()
         .map(|body| {
-            let rep = get_full_statement_rep(&body, depth);
+            let rep = get_full_statement_rep(body, depth);
             format!(
                 "{}{}",
                 if rep_starts_with_comment(&rep) {

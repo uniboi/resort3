@@ -14,9 +14,9 @@ pub fn get_delaythread_rep(expr: &sqparse::ast::DelayThreadStatement, depth: usi
         "{}{pre}{}{padding}{}{padding}{} {}",
         get_token(expr.delay_thread, "delaythread", depth),
         get_token(expr.open, "(", depth),
-        get_expression_rep(&*expr.duration, depth),
+        get_expression_rep(&expr.duration, depth),
         get_token(expr.close, ")", depth),
-        get_expression_rep(&*expr.value, depth)
+        get_expression_rep(&expr.value, depth)
     )
 }
 

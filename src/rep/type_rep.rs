@@ -25,7 +25,7 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
         Type::Plain(t) => get_token(t.name.token, t.name.value, depth),
         Type::Array(t) => format!(
             "{}{}{}{}",
-            get_typed_type_rep(&*t.base, depth),
+            get_typed_type_rep(&t.base, depth),
             get_token(t.open, "[", depth),
             get_expression_rep(&t.len, depth),
             get_token(t.close, "]", depth)
@@ -35,12 +35,12 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
         Type::Struct(t) => get_anon_struct_definition_rep(t, depth),
         Type::Reference(t) => format!(
             "{}{}",
-            get_typed_type_rep(&*t.base, depth),
+            get_typed_type_rep(&t.base, depth),
             get_token(t.reference, "&", depth)
         ),
         Type::Nullable(t) => format!(
             "{} {}",
-            get_typed_type_rep(&*t.base, depth),
+            get_typed_type_rep(&t.base, depth),
             get_token(t.ornull, "ornull", depth)
         ),
     }
@@ -48,9 +48,7 @@ pub fn get_typed_type_rep(ty: &Type, depth: usize) -> String {
 
 fn get_functionref_type_rep(f: &sqparse::ast::FunctionRefType, depth: usize) -> String {
     let args_rep = get_functionref_args_rep(&f.params, depth);
-    let padding = get_optional_padding(
-        args_rep.len() > get_config().functionref_oneliner_args_max,
-    );
+    let padding = get_optional_padding(args_rep.len() > get_config().functionref_oneliner_args_max);
     format!(
         "{} {}{}{padding}{args_rep}{padding}{}",
         get_boxed_type_rep(&f.return_type, depth),
@@ -71,24 +69,21 @@ fn get_functionref_args_rep(
     args: &sqparse::ast::SeparatedListTrailing0<sqparse::ast::FunctionRefParam>,
     depth: usize,
 ) -> String {
-    format!(
-        "{}",
-        match args {
-            Some(args) => format!(
-                "{}{}",
-                args.items
-                    .iter()
-                    .map(|(arg, comma)| format!(
-                        "{}{} ",
-                        get_functionref_arg_rep(&arg, depth),
-                        get_token(comma, ",", depth)
-                    ))
-                    .collect::<String>(),
-                get_functionref_arg_rep(&args.last_item, depth),
-            ),
-            None => String::new(),
-        }
-    )
+    match args {
+        Some(args) => format!(
+            "{}{}",
+            args.items
+                .iter()
+                .map(|(arg, comma)| format!(
+                    "{}{} ",
+                    get_functionref_arg_rep(arg, depth),
+                    get_token(comma, ",", depth)
+                ))
+                .collect::<String>(),
+            get_functionref_arg_rep(&args.last_item, depth),
+        ),
+        None => String::new(),
+    }
 }
 
 fn get_functionref_arg_rep(arg: &sqparse::ast::FunctionRefParam, depth: usize) -> String {
@@ -118,7 +113,7 @@ pub fn get_typedef_rep(def: &TypeDefinitionStatement, depth: usize) -> String {
 fn get_generic_type_rep(ty: &sqparse::ast::GenericType, depth: usize) -> String {
     format!(
         "{}{}{}{}",
-        get_typed_type_rep(&*ty.base, depth),
+        get_typed_type_rep(&ty.base, depth),
         get_token(ty.open, "<", depth),
         get_generic_type_content_rep(&ty.params, depth),
         get_token(ty.close, ">", depth),
@@ -141,7 +136,7 @@ fn get_generic_type_content_rep(
                 get_token(comma, ",", depth)
             ))
             .collect::<String>(),
-        get_typed_type_rep(&*types.last_item, depth)
+        get_typed_type_rep(&types.last_item, depth)
     );
 
     for item in &types.items {
@@ -150,7 +145,7 @@ fn get_generic_type_content_rep(
         }
     }
 
-    if matches!(&*types.last_item, Type::Generic(_)) {
+    if matches!(*types.last_item, Type::Generic(_)) {
         padding = " "; // This is required to compile since right bit shift (>>) will be lexed before any types
     }
 

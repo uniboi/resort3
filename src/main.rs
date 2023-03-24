@@ -49,29 +49,29 @@ fn format_directory(path: &PathBuf, mut output: PathBuf) -> Result<(), Error> {
                 output.push(p);
                 format_directory(&entry_path, output.clone())?;
             } else {
-				let extension = entry_path.extension();
-				if matches!(extension, Some(_)) && !(extension.unwrap() == "nut") && !(extension.unwrap() == "gnut") {
-					continue;
-				}
+                let extension = entry_path.extension();
+                if matches!(extension, Some(_))
+                    && extension.unwrap() != "nut"
+                    && extension.unwrap() != "gnut"
+                {
+                    continue;
+                }
 
                 let mut output = output.clone();
                 output.push(entry_path.file_name().unwrap());
 
-				let mut location = output.clone();
-				location.pop();
+                let mut location = output.clone();
+                location.pop();
 
                 std::fs::create_dir_all(&location)?;
-                format_file(
-                    &entry_path,
-                    &output,
-                )?;
+                format_file(&entry_path, &output)?;
             }
         }
     }
     Ok(())
 }
 
-fn format_file(path: &Path, output: &PathBuf) -> Result<(), Error> {
+fn format_file(path: &Path, output: &Path) -> Result<(), Error> {
     let source = fs::read_to_string(path).expect("Failed reading file");
     let tokens = match tokenize(&source, Flavor::SquirrelRespawn) {
         Ok(tokens) => tokens,
@@ -83,10 +83,7 @@ fn format_file(path: &Path, output: &PathBuf) -> Result<(), Error> {
     let ast = match parse(&tokens, Flavor::SquirrelRespawn) {
         Ok(ast) => ast,
         Err(err) => {
-            eprintln!(
-                "{}",
-                err.display(&source, &tokens, path.to_str())
-            );
+            eprintln!("{}", err.display(&source, &tokens, path.to_str()));
             panic!("parsing {path:?} failed");
         }
     };
@@ -110,13 +107,13 @@ fn dump_output(path: &Path, statements: Vec<String>) -> Result<(), Error> {
     Ok(())
 }
 
-fn load_config<'a>(path: Option<PathBuf>) {
+fn load_config(path: Option<PathBuf>) {
     unsafe {
         INIT.call_once(|| match path {
             Some(path) => {
                 CONFIG = Some(
                     Config::from_path(&path)
-                        .expect(&format!("failed loading configuration {:?}", &path)),
+                        .unwrap_or_else(|_| panic!("failed loading configuration {:?}", &path)),
                 )
             }
             None => CONFIG = Some(Config::new()),

@@ -1,12 +1,12 @@
-use std::{error::Error, path::PathBuf};
 use std::fs::File;
 use std::io::BufReader;
+use std::{error::Error, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct ConfigFile {
-	// general settings
+    // general settings
     pub semicolons: Option<bool>,
     pub trim_float: Option<bool>,
 
@@ -153,75 +153,83 @@ impl Config {
             semicolons: p.semicolons.unwrap_or(default.semicolons),
             delaythread_padding: p
                 .delaythread_padding
-                .unwrap_or(p.padding.unwrap_or(default.delaythread_padding)),
+                .unwrap_or_else(|| p.padding.unwrap_or(default.delaythread_padding)),
             delaythread_gap: p
                 .delaythread_gap
-                .unwrap_or(p.gap.unwrap_or(default.delaythread_gap)),
+                .unwrap_or_else(|| p.gap.unwrap_or(default.delaythread_gap)),
             array_oneliner_max: p.array_oneliner_max.unwrap_or(default.array_oneliner_max),
-            array_oneliner_definition_padding: p.array_oneliner_definition_padding.unwrap_or(
-                p.padding
-                    .unwrap_or(default.array_oneliner_definition_padding),
+            array_oneliner_definition_padding: p.array_oneliner_definition_padding.unwrap_or_else(
+                || {
+                    p.padding
+                        .unwrap_or(default.array_oneliner_definition_padding)
+                },
             ),
             expect_padding: p
                 .expect_padding
-                .unwrap_or(p.padding.unwrap_or(default.expect_padding)),
+                .unwrap_or_else(|| p.padding.unwrap_or(default.expect_padding)),
             trim_float: p.trim_float.unwrap_or(default.trim_float),
             vector_padding: p
                 .vector_padding
-                .unwrap_or(p.padding.unwrap_or(default.vector_padding)),
+                .unwrap_or_else(|| p.padding.unwrap_or(default.vector_padding)),
             functionref_oneliner_args_max: p
                 .functionref_oneliner_args_max
                 .unwrap_or(default.functionref_oneliner_args_max),
             non_generic_type_padding: p
                 .non_generic_type_padding
-                .unwrap_or(p.padding.unwrap_or(default.non_generic_type_padding)),
+                .unwrap_or_else(|| p.padding.unwrap_or(default.non_generic_type_padding)),
             table_oneliner_max: p.table_oneliner_max.unwrap_or(default.table_oneliner_max),
-            if_gap: p.if_gap.unwrap_or(p.gap.unwrap_or(default.if_gap)),
+            if_gap: p.if_gap.unwrap_or_else(|| p.gap.unwrap_or(default.if_gap)),
             if_padding: p
                 .if_padding
-                .unwrap_or(p.padding.unwrap_or(default.if_padding)),
-            if_inline: p.if_inline.unwrap_or(p.inline.unwrap_or(default.if_inline)),
-            for_gap: p.for_gap.unwrap_or(p.gap.unwrap_or(default.for_gap)),
+                .unwrap_or_else(|| p.padding.unwrap_or(default.if_padding)),
+            if_inline: p
+                .if_inline
+                .unwrap_or_else(|| p.inline.unwrap_or(default.if_inline)),
+            for_gap: p
+                .for_gap
+                .unwrap_or_else(|| p.gap.unwrap_or(default.for_gap)),
             for_padding: p
                 .for_padding
-                .unwrap_or(p.padding.unwrap_or(default.for_padding)),
+                .unwrap_or_else(|| p.padding.unwrap_or(default.for_padding)),
             for_inline: p
                 .for_inline
-                .unwrap_or(p.inline.unwrap_or(default.for_inline)),
+                .unwrap_or_else(|| p.inline.unwrap_or(default.for_inline)),
             foreach_gap: p
                 .foreach_gap
-                .unwrap_or(p.gap.unwrap_or(default.foreach_gap)),
+                .unwrap_or_else(|| p.gap.unwrap_or(default.foreach_gap)),
             foreach_padding: p
                 .foreach_padding
-                .unwrap_or(p.padding.unwrap_or(default.foreach_padding)),
+                .unwrap_or_else(|| p.padding.unwrap_or(default.foreach_padding)),
             foreach_inline: p
                 .foreach_inline
-                .unwrap_or(p.inline.unwrap_or(default.foreach_inline)),
-            while_gap: p.while_gap.unwrap_or(p.gap.unwrap_or(default.while_gap)),
+                .unwrap_or_else(|| p.inline.unwrap_or(default.foreach_inline)),
+            while_gap: p
+                .while_gap
+                .unwrap_or_else(|| p.gap.unwrap_or(default.while_gap)),
             while_padding: p
                 .while_padding
-                .unwrap_or(p.padding.unwrap_or(default.while_padding)),
+                .unwrap_or_else(|| p.padding.unwrap_or(default.while_padding)),
             while_inline: p
                 .while_inline
-                .unwrap_or(p.inline.unwrap_or(default.while_inline)),
+                .unwrap_or_else(|| p.inline.unwrap_or(default.while_inline)),
             do_while_inline: p
                 .do_while_inline
-                .unwrap_or(p.inline.unwrap_or(default.do_while_inline)),
+                .unwrap_or_else(|| p.inline.unwrap_or(default.do_while_inline)),
             if_inline_block: p
                 .if_inline_block
-                .unwrap_or(p.inline_block.unwrap_or(default.if_inline_block)),
+                .unwrap_or_else(|| p.inline_block.unwrap_or(default.if_inline_block)),
             for_inline_block: p
                 .for_inline_block
-                .unwrap_or(p.for_inline_block.unwrap_or(default.for_inline_block)),
+                .unwrap_or_else(|| p.for_inline_block.unwrap_or(default.for_inline_block)),
             foreach_inline_block: p
                 .foreach_inline_block
-                .unwrap_or(p.inline_block.unwrap_or(default.foreach_inline_block)),
+                .unwrap_or_else(|| p.inline_block.unwrap_or(default.foreach_inline_block)),
             while_inline_block: p
                 .while_inline_block
-                .unwrap_or(p.inline_block.unwrap_or(default.while_inline_block)),
+                .unwrap_or_else(|| p.inline_block.unwrap_or(default.while_inline_block)),
             do_while_inline_block: p
                 .do_while_inline_block
-                .unwrap_or(p.inline_block.unwrap_or(default.do_while_inline_block)),
+                .unwrap_or_else(|| p.inline_block.unwrap_or(default.do_while_inline_block)),
         })
     }
 }

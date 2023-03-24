@@ -19,16 +19,13 @@ pub fn get_while_rep(stm: &WhileStatement, depth: usize) -> String {
         "{}{gap}{}{padding}{}{padding}{}{}",
         get_token(stm.while_, "while", depth),
         get_token(stm.open, "(", depth),
-        get_expression_rep(&*stm.condition, depth),
+        get_expression_rep(&stm.condition, depth),
         get_token(stm.close, ")", depth),
-        format!(
-            "{}",
-            match &*stm.body {
-                StatementType::Block(_) =>
-                    get_inline_statement_rep(&*stm.body, depth, get_config().while_inline_block),
-                _ => get_inline_statement_rep(&*stm.body, depth, inline),
-            }
-        )
+		match *stm.body {
+			StatementType::Block(_) =>
+				get_inline_statement_rep(&stm.body, depth, get_config().while_inline_block),
+			_ => get_inline_statement_rep(&stm.body, depth, inline),
+		}
     )
 }
 
@@ -43,7 +40,7 @@ pub fn get_do_while_rep(stm: &DoWhileStatement, depth: usize) -> String {
             StatementType::Block(_) => format!(
                 "{} ",
                 append_semicolon(
-                    &*stm.body,
+                    &stm.body,
                     get_inline_statement_rep(
                         &stm.body.ty,
                         depth,
@@ -54,19 +51,19 @@ pub fn get_do_while_rep(stm: &DoWhileStatement, depth: usize) -> String {
             ),
             _ =>
                 if inline {
-                    format!(" {} ", get_full_statement_rep(&*stm.body, depth))
+                    format!(" {} ", get_full_statement_rep(&stm.body, depth))
                 } else {
                     format!(
                         "\n{}{}\n{}",
                         get_lead(depth + 1),
-                        get_full_statement_rep(&*stm.body, depth),
+                        get_full_statement_rep(&stm.body, depth),
                         get_lead(depth)
                     )
                 },
         },
         get_token(stm.while_, "while", depth),
         get_token(stm.open, "(", depth),
-        get_expression_rep(&*stm.condition, depth),
+        get_expression_rep(&stm.condition, depth),
         get_token(stm.close, ")", depth),
     )
 }

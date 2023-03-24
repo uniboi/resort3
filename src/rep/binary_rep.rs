@@ -7,9 +7,9 @@ use super::tokens::get_token;
 pub fn get_binary_rep(p: &BinaryExpression, depth: usize) -> String {
     format!(
         "{} {} {}",
-        get_expression_rep(&*p.left, depth),
+        get_expression_rep(&p.left, depth),
         get_binary_operator_rep(&p.operator, depth),
-        get_expression_rep(&*p.right, depth)
+        get_expression_rep(&p.right, depth)
     )
 }
 

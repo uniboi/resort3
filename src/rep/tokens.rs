@@ -20,7 +20,7 @@ fn get_post_token_lines(token: &Token, depth: usize) -> String {
     match &token.new_line {
         Some(line) => {
             let mut comments = get_comments(&line.comments, depth);
-            if comments.len() > 0 {
+            if !comments.is_empty() {
                 comments = format!(" {comments}");
             }
             comments
@@ -33,7 +33,7 @@ pub fn get_pre_token_comment_lines(token: &Token, depth: usize) -> String {
     let lines = token
         .before_lines
         .iter()
-        .filter(|line| line.comments.len() > 0)
+        .filter(|line| !line.comments.is_empty())
         .collect::<Vec<_>>()
         .iter()
         .map(|line| format!("{}{}", get_lead(depth), get_line_rep(line, depth)))
@@ -41,7 +41,7 @@ pub fn get_pre_token_comment_lines(token: &Token, depth: usize) -> String {
     format!(
         "{}{}",
         lines.join(""),
-        if lines.len() > 0 {
+        if !lines.is_empty() {
             get_lead(depth)
         } else {
             String::new()
@@ -69,10 +69,10 @@ pub fn get_pre_token_lines(token: &Token, depth: usize) -> String {
                     prev_line_empty = false;
                 }
                 let final_rep = format!("{}{rep}", if rep.trim().is_empty() { "" } else { &lead });
-                return final_rep;
+                final_rep
             })
             .collect::<String>(),
-        if token.before_lines.len() > 0 {
+        if !token.before_lines.is_empty() {
             lead
         } else {
             String::new()
@@ -85,13 +85,13 @@ fn get_line_rep(line: &TokenLine, depth: usize) -> String {
 }
 
 fn get_pre_token_comments(token: &Token, depth: usize) -> String {
-    if token.comments.len() == 0 {
+    if token.comments.is_empty() {
         return String::new();
     }
     format!("{} ", get_comments(&token.comments, depth))
 }
 
-fn get_comments(comments: &Vec<Comment>, depth: usize) -> String {
+fn get_comments(comments: &[Comment], depth: usize) -> String {
     comments
         .iter()
         .map(|comment| match comment {

@@ -8,7 +8,7 @@ pub fn get_prefixed_expression_rep(exp: &PrefixExpression, depth: usize) -> Stri
     format!(
         "{}{}",
         get_prefix_rep(&exp.operator, depth),
-        get_expression_rep(&*exp.value, depth)
+        get_expression_rep(&exp.value, depth)
     )
 }
 
@@ -35,7 +35,7 @@ fn get_prefix_rep(op: &sqparse::ast::PrefixOperator, depth: usize) -> String {
 pub fn get_postfixed_expression_rep(exp: &PostfixExpression, depth: usize) -> String {
     format!(
         "{}{}",
-        get_expression_rep(&*exp.value, depth),
+        get_expression_rep(&exp.value, depth),
         get_postfix_rep(&exp.operator, depth)
     )
 }

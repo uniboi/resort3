@@ -20,7 +20,7 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
     let open = get_token(table.open, "{", depth);
     let close = get_token(table.close, "}", depth);
 
-    if table.slots.len() == 0 {
+    if table.slots.is_empty() {
         return format!("{open}{close}");
     }
 
@@ -55,7 +55,7 @@ pub fn get_table_rep(table: &sqparse::ast::TableExpression, depth: usize) -> Str
                 })
                 .collect::<String>()
         );
-        if rep.find("\n") != None || rep_includes_single_line_comment(&rep) {
+        if rep.find('\n').is_some() || rep_includes_single_line_comment(&rep) {
             return get_multiline_table_rep(table, depth);
         }
         return rep;
@@ -108,7 +108,7 @@ pub fn get_table_pair_rep(s: &TableSlot, depth: usize) -> String {
             "\"{}\" {} {}",
             get_token(name_token, name, depth),
             get_token(colon, ":", depth),
-            get_expression_rep(&*value, depth)
+            get_expression_rep(value, depth)
         ),
     }
 }
@@ -128,7 +128,7 @@ pub fn get_slot_rep(s: &Slot, depth: usize) -> String {
         } => format!(
             "{} {} {}{}",
             get_token(open, "[", depth),
-            get_expression_rep(&*name, depth),
+            get_expression_rep(name, depth),
             get_token(close, "]", depth),
             get_var_initializer_rep(initializer, depth)
         ),

@@ -12,7 +12,7 @@ pub fn get_expression_rep(expression: &Expression, depth: usize) -> String {
         Expression::Parens(p) => format!(
             "{} {} {}",
             get_token(p.open, "(", depth),
-            get_expression_rep(&*p.value, depth),
+            get_expression_rep(&p.value, depth),
             get_token(p.close, ")", depth)
         ),
         Expression::Literal(p) => get_literal_rep(p, depth),
@@ -20,19 +20,19 @@ pub fn get_expression_rep(expression: &Expression, depth: usize) -> String {
         Expression::RootVar(p) => format!("::{}", p.name.value),
         Expression::Index(p) => format!(
             "{}{} {} {}",
-            get_expression_rep(&*p.base, depth),
+            get_expression_rep(&p.base, depth),
             get_token(p.open, "[", depth),
-            get_expression_rep(&*p.index, depth),
+            get_expression_rep(&p.index, depth),
             get_token(p.close, "]", depth),
         ),
         Expression::Property(p) => get_property_rep(p, depth),
         Expression::Ternary(p) => format!(
             "{} {} {} {} {}",
-            get_expression_rep(&*p.condition, depth),
+            get_expression_rep(&p.condition, depth),
             get_token(p.question, "?", depth),
-            get_expression_rep(&*p.true_value, depth),
+            get_expression_rep(&p.true_value, depth),
             get_token(p.separator, ":", depth),
-            get_expression_rep(&*p.false_value, depth)
+            get_expression_rep(&p.false_value, depth)
         ),
         Expression::Binary(p) => get_binary_rep(p, depth),
         Expression::Prefix(p) => get_prefixed_expression_rep(p, depth),
@@ -48,7 +48,7 @@ pub fn get_expression_rep(expression: &Expression, depth: usize) -> String {
                     get_token(comma, ",", depth)
                 ))
                 .collect::<String>(),
-            get_expression_rep(&*p.values.last_item, depth)
+            get_expression_rep(&p.values.last_item, depth)
         ),
         Expression::Table(p) => get_table_rep(p, depth),
         Expression::Class(p) => get_class_expression_rep(p, depth),
@@ -58,9 +58,9 @@ pub fn get_expression_rep(expression: &Expression, depth: usize) -> String {
         Expression::Delegate(p) => format!(
             "{} {} {} {}",
             get_token(p.delegate, "delegate", depth),
-            get_expression_rep(&*p.parent, depth),
+            get_expression_rep(&p.parent, depth),
             get_token(p.colon, ":", depth),
-            get_expression_rep(&*p.value, depth)
+            get_expression_rep(&p.value, depth)
         ),
         Expression::Vector(p) => get_vector_rep(p, depth),
         Expression::Expect(p) => {
@@ -70,7 +70,7 @@ pub fn get_expression_rep(expression: &Expression, depth: usize) -> String {
                 get_token(p.expect, "expect", depth),
                 get_typed_type_rep(&p.ty, depth),
                 get_token(p.open, "(", depth),
-                get_expression_rep(&*p.value, depth),
+                get_expression_rep(&p.value, depth),
                 get_token(p.close, ")", depth),
             )
         }
@@ -80,7 +80,7 @@ pub fn get_expression_rep(expression: &Expression, depth: usize) -> String {
                 "\n{}{}",
                 get_lead(depth),
                 get_preprocessed_if_rep(
-                    &*p,
+                    p,
                     &|content, depth| format!(
                         "{}{}",
                         get_lead(depth + 1),

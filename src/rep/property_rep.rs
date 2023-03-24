@@ -5,7 +5,7 @@ use super::tokens::get_token;
 pub fn get_property_rep(exp: &sqparse::ast::PropertyExpression, depth: usize) -> String {
     format!(
         "{}{}{}",
-        get_expression_rep(&*exp.base, depth),
+        get_expression_rep(&exp.base, depth),
         get_token(exp.dot, ".", depth),
         get_method_identifier_rep(&exp.property, depth)
     )

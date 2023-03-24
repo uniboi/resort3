@@ -102,11 +102,11 @@ pub fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::Throw(p) => throw_rep(p, depth),
         StatementType::Const(p) => get_const_rep(p, depth),
         StatementType::EnumDefinition(p) => get_enum_rep(p, depth),
-        StatementType::Expression(p) => get_expression_rep(&*p.value, depth),
+        StatementType::Expression(p) => get_expression_rep(&p.value, depth),
         StatementType::Thread(p) => format!(
             "{} {}",
             get_token(p.thread, "thread", depth),
-            get_expression_rep(&*p.value, depth)
+            get_expression_rep(&p.value, depth)
         ),
         StatementType::DelayThread(p) => get_delaythread_rep(p, depth),
         StatementType::WaitThread(p) => get_token(p.wait_thread, "waitthread", depth),
@@ -114,7 +114,7 @@ pub fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
         StatementType::Wait(p) => format!(
             "{} {}",
             get_token(p.wait, "wait", depth),
-            get_expression_rep(&*p.value, depth)
+            get_expression_rep(&p.value, depth)
         ),
         StatementType::StructDefinition(p) => get_struct_definition_rep(p, depth),
         StatementType::TypeDefinition(p) => get_typedef_rep(p, depth),
@@ -129,7 +129,7 @@ pub fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
                 contents
                     .iter()
                     .map(|c| {
-                        let rep = get_full_statement_rep(&c, depth + 1);
+                        let rep = get_full_statement_rep(c, depth + 1);
                         let raw = format!(
                             "{}{}",
                             if rep_starts_with_comment(&rep) {

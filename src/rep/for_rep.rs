@@ -51,25 +51,25 @@ pub fn get_for_rep(stm: &ForStatement, depth: usize) -> String {
         get_token(stm.for_, "for", depth),
         get_token(stm.open, "(", depth),
         get_token(stm.close, ")", depth),
-        match &*stm.body {
+        match *stm.body {
             sqparse::ast::StatementType::Block(_) =>
                 if get_config().for_inline_block {
-                    format!(" {}", get_statement_rep(&*stm.body, depth))
+                    format!(" {}", get_statement_rep(&stm.body, depth))
                 } else {
                     format!(
                         "\n{}{}",
                         get_lead(depth),
-                        get_statement_rep(&*stm.body, depth)
+                        get_statement_rep(&stm.body, depth)
                     )
                 },
             _ =>
                 if inline {
-                    format!(" {}", get_statement_rep(&*stm.body, depth))
+                    format!(" {}", get_statement_rep(&stm.body, depth))
                 } else {
                     format!(
                         "\n{}{}",
                         get_lead(depth + 1),
-                        get_statement_rep(&*stm.body, depth)
+                        get_statement_rep(&stm.body, depth)
                     )
                 },
         }

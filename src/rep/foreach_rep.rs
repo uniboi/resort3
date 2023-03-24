@@ -23,13 +23,13 @@ pub fn get_foreach_rep(stm: &ForeachStatement, depth: usize) -> String {
         },
         get_foreach_value_rep(&stm.value_type, &stm.value_name, depth),
         get_token(stm.in_, "in", depth),
-        get_expression_rep(&*stm.array, depth),
+        get_expression_rep(&stm.array, depth),
         get_token(stm.close, ")", depth),
-        match &*stm.body {
+        match *stm.body {
             StatementType::Block(_) => {
-                get_inline_statement_rep(&*stm.body, depth, get_config().foreach_inline_block)
+                get_inline_statement_rep(&stm.body, depth, get_config().foreach_inline_block)
             }
-            _ => get_inline_statement_rep(&*stm.body, depth, inline),
+            _ => get_inline_statement_rep(&stm.body, depth, inline),
         },
     )
 }

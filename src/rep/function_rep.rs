@@ -34,7 +34,7 @@ pub fn get_function_rep(f: &FunctionExpression, depth: usize) -> String {
             Some(p) => get_capture_rep(p, depth),
             None => String::new(),
         },
-        get_statement_rep(&*f.definition.body, depth)
+        get_statement_rep(&f.definition.body, depth)
     )
 }
 
@@ -52,7 +52,7 @@ fn get_capture_rep(capture: &sqparse::ast::FunctionCaptures, depth: usize) -> St
                     .map(|(identifier, _)| identifier.value)
                     .collect::<Vec<_>>()
                     .join(", "),
-                if idens.items.len() > 0 { ", " } else { " " },
+                if idens.items.is_empty() { " " } else { ", " },
                 idens.last_item.value
             ),
             None => String::new(),
@@ -84,7 +84,7 @@ fn get_function_param_rep(args: &FunctionParams, depth: usize) -> String {
         ),
     };
 
-    if inline_rep.find("\n") != None || rep_includes_single_line_comment(&inline_rep) {
+    if inline_rep.find('\n').is_some() || rep_includes_single_line_comment(&inline_rep) {
         return format!("{}\n{lead}", get_multiline_function_params_rep(args, depth));
     }
 
@@ -107,7 +107,7 @@ fn get_multiline_function_params_rep(args: &FunctionParams, depth: usize) -> Str
             vararg,
         } => format!(
             "{}{}\n{param_lead}{}",
-            get_multiline_function_params_value_non_trailing_rep(&params, depth),
+            get_multiline_function_params_value_non_trailing_rep(params, depth),
             get_token(comma, ",", depth),
             get_token(vararg, "...", depth)
         ),
@@ -156,7 +156,7 @@ fn get_multiline_function_params_value_non_trailing_rep(
 }
 
 fn get_multiline_function_params_value_internal(
-    params: &Vec<(&FunctionParam, &&Token)>,
+    params: &[(&FunctionParam, &&Token)],
     last_param: &FunctionParam,
     depth: usize,
 ) -> String {
@@ -183,14 +183,14 @@ fn get_typed_arg_rep(arg: &FunctionParam, depth: usize) -> String {
         get_type_rep(&arg.type_, arg.name.token, depth),
         get_headless_token(arg.name.token, arg.name.value, depth), // TODO: idk what I did but this seems wrong
         match &arg.initializer {
-            Some(init) => format!(" = {}", get_expression_rep(&*init.value, depth + 1)),
+            Some(init) => format!(" = {}", get_expression_rep(&init.value, depth + 1)),
             None => String::from(""),
         }
     )
 }
 
 fn get_all_typed_args_rep(
-    args: &Vec<(FunctionParam<'_>, &sqparse::token::Token<'_>)>,
+    args: &[(FunctionParam<'_>, &sqparse::token::Token<'_>)],
     last_arg: &FunctionParam,
     depth: usize,
 ) -> String {
@@ -224,7 +224,7 @@ pub fn get_function_definition_rep(f: &FunctionDefinitionStatement, depth: usize
 
 pub fn get_function_def_rep(def: &FunctionDefinition, depth: usize) -> String {
     let (empty_body, empty_block) = match &*def.body {
-        StatementType::Block(b) => (b.statements.len() == 0, get_empty_block(&b, depth)),
+        StatementType::Block(b) => (b.statements.is_empty(), get_empty_block(b, depth)),
         _ => (
             false,
             String::from("/* formatting error: expected empty block */"), // bruh moment
@@ -255,7 +255,7 @@ fn get_environment_rep(env: &Option<FunctionEnvironment>, depth: usize) -> Strin
         Some(env) => format!(
             "{} {} {}",
             get_token(env.open, "[", depth),
-            get_expression_rep(&*env.value, depth),
+            get_expression_rep(&env.value, depth),
             get_token(env.close, "]", depth),
         ),
         None => String::new(),
@@ -265,7 +265,7 @@ fn get_environment_rep(env: &Option<FunctionEnvironment>, depth: usize) -> Strin
 pub fn get_call_rep(p: &CallExpression, depth: usize) -> String {
     format!(
         "{}{}{}{}",
-        get_expression_rep(&*p.function, depth),
+        get_expression_rep(&p.function, depth),
         get_token(p.open, "(", depth),
         get_call_params_rep(&p.arguments, depth),
         get_token(p.close, ")", depth),
@@ -275,7 +275,7 @@ pub fn get_call_rep(p: &CallExpression, depth: usize) -> String {
 fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
     let max_oneliner_args = 5; // TODO: read from config
 
-    if args.len() == 0 {
+    if args.is_empty() {
         return String::new();
     }
     let rep = format!(
@@ -284,7 +284,7 @@ fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
             .map(|arg| {
                 format!(
                     "{}{}",
-                    get_expression_rep(&*arg.value, depth),
+                    get_expression_rep(&arg.value, depth),
                     match &arg.comma {
                         Some(token) => get_token(token, ", ", depth),
                         None => String::new(),
@@ -295,14 +295,14 @@ fn get_call_params_rep(args: &Vec<CallArgument>, depth: usize) -> String {
     );
 
     // call expressions with newlines should be multiline
-    if args.len() >= max_oneliner_args || rep.find("\n") != None {
+    if args.len() >= max_oneliner_args || rep.find('\n').is_some() {
         let lead = get_lead(depth + 1);
         return format!(
             "\n{}\n{}",
             args.iter()
                 .map(|arg| format!(
                     "{lead}{}{}",
-                    get_expression_rep(&*arg.value, depth + 1),
+                    get_expression_rep(&arg.value, depth + 1),
                     match &arg.comma {
                         Some(token) => get_token(token, ",", depth),
                         None => String::new(),
@@ -320,7 +320,7 @@ pub fn get_fragmented_named_function_rep(
     return_type: &Option<Type>,
     function: &Token,
     name: &Identifier,
-    definition: &Box<FunctionDefinition>,
+    definition: &FunctionDefinition,
     depth: usize,
 ) -> String {
     format!(

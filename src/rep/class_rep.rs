@@ -17,7 +17,7 @@ pub fn get_class_statement_rep(p: &ClassDefinitionStatement, depth: usize) -> St
     format!(
         "{} {} {}",
         get_token(p.class, "class", depth),
-        get_expression_rep(&*p.name, depth),
+        get_expression_rep(&p.name, depth),
         get_class_def_rep(&p.definition, depth)
     )
 }
@@ -37,7 +37,7 @@ fn get_class_def_rep(def: &ClassDefinition, depth: usize) -> String {
 }
 
 // TODO: Add class attributes
-fn get_class_members_rep(members: &Vec<ClassMember>, depth: usize) -> String {
+fn get_class_members_rep(members: &[ClassMember], depth: usize) -> String {
     let lead = get_lead(depth);
     format!(
         "\n{}",
@@ -59,6 +59,6 @@ fn get_class_extend_rep(ext: &ClassExtends, depth: usize) -> String {
     format!(
         "{} {}",
         get_token(ext.extends, "extends", depth),
-        get_expression_rep(&*ext.name, depth)
+        get_expression_rep(&ext.name, depth)
     )
 }

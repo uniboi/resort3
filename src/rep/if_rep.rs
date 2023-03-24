@@ -17,10 +17,10 @@ pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
         "{}{gap}{}{padding}{}{padding}{}{}",
         get_token(stm.if_, "if", depth),
         get_token(stm.open, "(", depth),
-        get_expression_rep(&*stm.condition, depth),
+        get_expression_rep(&stm.condition, depth),
         get_token(stm.close, ")", depth),
         match &stm.ty {
-            sqparse::ast::IfStatementType::NoElse { body } => get_if_body_rep(&*body, depth),
+            sqparse::ast::IfStatementType::NoElse { body } => get_if_body_rep(body, depth),
             sqparse::ast::IfStatementType::Else {
                 body,
                 else_,
@@ -29,9 +29,9 @@ pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
                 "{}\n{lead}{}{}",
                 get_if_body_rep(&body.ty, depth),
                 get_token(else_, "else", depth),
-                match &**else_body {
-                    StatementType::If(_) => get_if_body_rep(&*else_body, depth),
-                    _ => format!("{}", get_if_body_rep(&*else_body, depth)),
+                match **else_body {
+                    StatementType::If(_) => get_if_body_rep(else_body, depth),
+                    _ => get_if_body_rep(else_body, depth),
                 },
             ),
             sqparse::ast::IfStatementType::NoElseTailless => String::new(),
@@ -57,7 +57,7 @@ fn get_if_body_rep(stm: &StatementType, depth: usize) -> String {
         p => format!(
             "{}{}",
             if get_config().if_inline {
-                format!(" ")
+                String::from(" ")
             } else {
                 format!("\n{}", get_lead(depth + 1))
             },

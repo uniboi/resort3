@@ -41,7 +41,7 @@ fn get_struct_def_rep(def: &StructDefinition, depth: usize) -> String {
                 "\n{lead}{}",
                 get_preprocessed_rep(
                     preprocessed,
-                    &|property, depth| get_struct_property_rep(property, depth),
+                    &get_struct_property_rep,
                     depth,
                 )
             ),

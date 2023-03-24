@@ -25,7 +25,7 @@ pub fn get_preprocessed_if_rep<T, FnRep: Fn(&T, usize) -> String>(
     format!(
         "{} {}\n{}{elseif_rep}{else_rep}\n{lead}{}",
         get_token(p.if_, "#if", depth),
-        get_expression_rep(&*p.condition, depth),
+        get_expression_rep(&p.condition, depth),
         rep(&p.content, depth),
         get_token(p.endif, "#endif", depth),
     )
@@ -44,7 +44,7 @@ fn get_preprocessed_elseif_rep<T, FnRep: Fn(&T, usize) -> String>(
     format!(
         "\n{lead}{} {}\n{}{elseif_rep}",
         get_token(p.elseif_, "#elseif", depth),
-        get_expression_rep(&*p.condition, depth),
+        get_expression_rep(&p.condition, depth),
         rep(&p.content, depth)
     )
 }

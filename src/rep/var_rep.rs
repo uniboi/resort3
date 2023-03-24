@@ -58,6 +58,6 @@ pub fn get_var_initializer_rep(statement: &VarInitializer, depth: usize) -> Stri
     format!(
         " {} {}",
         get_token(statement.assign, "=", depth),
-        get_expression_rep(&*statement.value, depth)
+        get_expression_rep(&statement.value, depth)
     )
 }

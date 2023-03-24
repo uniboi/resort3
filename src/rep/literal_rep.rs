@@ -15,7 +15,6 @@ pub fn get_literal_rep(exp: &sqparse::ast::LiteralExpression, depth: usize) -> S
                 } else {
                     rep
                 }
-                .to_string()
             }
             sqparse::token::LiteralToken::String(s) => get_string_rep(s),
         },
@@ -32,14 +31,14 @@ fn get_integer_rep(
         sqparse::token::LiteralBase::Decimal => format!("{value}"),
         sqparse::token::LiteralBase::Octal => {
             let oct = format!("{value:o}");
-            let preamble = "0".repeat(&exp.token.range.end - &exp.token.range.start - oct.len());
+            let preamble = "0".repeat(exp.token.range.end - exp.token.range.start - oct.len());
             format!("{preamble}{oct}")
         }
         sqparse::token::LiteralBase::Hexadecimal => {
             let prefix = "0x";
             let hex = format!("{value:X}");
-            let preamble = "0"
-                .repeat(&exp.token.range.end - &exp.token.range.start - hex.len() - prefix.len());
+            let preamble =
+                "0".repeat(exp.token.range.end - exp.token.range.start - hex.len() - prefix.len());
             format!("{prefix}{preamble}{hex}")
         }
     }
