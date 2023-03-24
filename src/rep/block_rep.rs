@@ -1,4 +1,4 @@
-use sqparse::ast::{BlockStatement, StatementType, Statement};
+use sqparse::ast::{BlockStatement, StatementType};
 
 use crate::{
     get_full_statement_rep,

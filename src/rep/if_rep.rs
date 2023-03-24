@@ -8,6 +8,7 @@ use crate::{
 
 use super::{block_rep::get_block_rep, statements::get_statement_rep};
 
+// TODO: body semicolon token gets eaten
 pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
     let gap = get_optional_padding(get_config().if_gap);
     let padding = get_optional_padding(get_config().if_padding);
@@ -33,6 +34,12 @@ pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
                     _ => format!("{}", get_if_body_rep(&*else_body, depth)),
                 },
             ),
+            sqparse::ast::IfStatementType::NoElseTailless => String::new(),
+            sqparse::ast::IfStatementType::ElseTailless { body, else_ } => format!(
+                "{}\n{lead}{}",
+                get_if_body_rep(&body.ty, depth),
+                get_token(else_, "else", depth)
+            ),
         }
     )
 }
@@ -40,11 +47,13 @@ pub fn get_if_rep(stm: &IfStatement, depth: usize) -> String {
 fn get_if_body_rep(stm: &StatementType, depth: usize) -> String {
     match &stm {
         StatementType::If(p) => format!(" {}", get_if_rep(p, depth)),
-        StatementType::Block(p) => if get_config().if_inline_block {
-			format!(" {}", get_block_rep(p, depth))
-		} else {
-			format!("\n{}{}", get_lead(depth), get_block_rep(p, depth))
-		},
+        StatementType::Block(p) => {
+            if get_config().if_inline_block {
+                format!(" {}", get_block_rep(p, depth))
+            } else {
+                format!("\n{}{}", get_lead(depth), get_block_rep(p, depth))
+            }
+        }
         p => format!(
             "{}{}",
             if get_config().if_inline {

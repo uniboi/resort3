@@ -30,7 +30,6 @@ fn get_post_token_lines(token: &Token, depth: usize) -> String {
 }
 
 pub fn get_pre_token_comment_lines(token: &Token, depth: usize) -> String {
-    let lead = get_lead(depth);
     let lines = token
         .before_lines
         .iter()
@@ -48,7 +47,6 @@ pub fn get_pre_token_comment_lines(token: &Token, depth: usize) -> String {
             String::new()
         }
     )
-	// String::new()
 }
 
 pub fn get_pre_token_lines(token: &Token, depth: usize) -> String {

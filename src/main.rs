@@ -49,6 +49,11 @@ fn format_directory(path: &PathBuf, mut output: PathBuf) -> Result<(), Error> {
                 output.push(p);
                 format_directory(&entry_path, output.clone())?;
             } else {
+				let extension = entry_path.extension();
+				if matches!(extension, Some(_)) && !(extension.unwrap() == "nut") && !(extension.unwrap() == "gnut") {
+					continue;
+				}
+
                 let mut output = output.clone();
                 output.push(entry_path.file_name().unwrap());
 
@@ -68,8 +73,23 @@ fn format_directory(path: &PathBuf, mut output: PathBuf) -> Result<(), Error> {
 
 fn format_file(path: &Path, output: &PathBuf) -> Result<(), Error> {
     let source = fs::read_to_string(path).expect("Failed reading file");
-    let tokens = tokenize(&source, Flavor::SquirrelRespawn).unwrap();
-    let ast = parse(&tokens, Flavor::SquirrelRespawn).unwrap();
+    let tokens = match tokenize(&source, Flavor::SquirrelRespawn) {
+        Ok(tokens) => tokens,
+        Err(err) => {
+            eprintln!("{}", err.display(&source, path.to_str()));
+            panic!("tokenizing {path:?} failed");
+        }
+    };
+    let ast = match parse(&tokens, Flavor::SquirrelRespawn) {
+        Ok(ast) => ast,
+        Err(err) => {
+            eprintln!(
+                "{}",
+                err.display(&source, &tokens, path.to_str())
+            );
+            panic!("parsing {path:?} failed");
+        }
+    };
 
     let mut statements: Vec<String> = Vec::new();
     for statement in ast.statements {

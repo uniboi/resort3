@@ -1,6 +1,6 @@
 use std::str::Split;
 
-use sqparse::token::{Comment, Token};
+use sqparse::token::Token;
 
 use crate::rep::tokens::get_token;
 
@@ -39,20 +39,6 @@ pub fn trim_trailing_newline(s: &mut String) {
     }
 }
 
-/// check if a list of tokens contains a single line comment after itself
-pub fn tokens_include_single_line_comment(tokens: Vec<&Token>) -> bool {
-    for token in tokens {
-        if let Some(line) = &token.new_line {
-            for comment in &line.comments {
-                if let Comment::SingleLine(_) = comment {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
 pub fn rep_includes_single_line_comment(rep: &String) -> bool {
     let comment_index = rep.find("//");
     if let None = comment_index {
@@ -70,9 +56,9 @@ pub fn rep_starts_with_comment(rep: &String) -> bool {
 }
 
 pub fn get_optional_padding<'a>(padding: bool) -> &'a str {
-	if padding {
-		" "
-	} else {
-		""
-	}
+    if padding {
+        " "
+    } else {
+        ""
+    }
 }

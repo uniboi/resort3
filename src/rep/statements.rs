@@ -79,7 +79,10 @@ pub fn get_full_statement_rep(statement: &Statement, depth: usize) -> String {
 
 pub fn get_statement_rep(statement: &StatementType, depth: usize) -> String {
     let rep: String = match &statement {
-        StatementType::Empty(_) => todo!(),
+        StatementType::Empty(p) => match p.empty {
+            Some(p) => get_token(p, "", depth),
+            None => String::new(),
+        },
         StatementType::Block(p) => get_block_rep(p, depth),
         StatementType::If(p) => get_if_rep(p, depth),
         StatementType::While(p) => get_while_rep(p, depth),
